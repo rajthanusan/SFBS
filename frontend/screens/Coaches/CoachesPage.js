@@ -1,10 +1,10 @@
 import React from 'react';
 import { SafeAreaView, Text, StyleSheet } from 'react-native';
 
-export default function UserPage() {
+export default function CoachPage() {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Text style={styles.heading}>User Page</Text>
+      <Text style={styles.heading}>Coach Page</Text>
     </SafeAreaView>
   );
 }

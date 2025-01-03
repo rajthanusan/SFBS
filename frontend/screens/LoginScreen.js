@@ -9,16 +9,45 @@ import {
   Platform,
   SafeAreaView,
   Image,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import logo from '../assets/images/logo.jpg';
+import config from '../config';
 
-export default function LoginScreen({ onLogin }) {
-  const [username, setUsername] = useState('');
+export default function LoginScreen({ navigation, setUser }) {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // In a real app, you would validate credentials here
-    onLogin();
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${config.API_URL}/api/v1/auth/login`, {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+    
+      // Store the token
+      await AsyncStorage.setItem('userToken', token);
+
+      // Decode the token
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    
+      // Set the user in the app's state
+      setUser(decodedToken);
+
+      // The navigation to 'Main' will be handled automatically in App.js
+      // when the user state changes
+    } catch (error) {
+      let errorMessage = 'An error occurred during login.';
+      if (error.response && error.response.data && error.response.data.msg) {
+        errorMessage = error.response.data.msg;
+      }
+      Alert.alert('Login Failed', errorMessage);
+    }
   };
 
   return (
@@ -28,22 +57,20 @@ export default function LoginScreen({ onLogin }) {
         style={styles.keyboardAvoidingView}
       >
         <View style={styles.logoContainer}>
-        <Image
-  source={{ uri: 'https://img.freepik.com/premium-vector/sports-team-logo-with-handshake_339976-60098.jpg' }} // Correct way to load remote image
-  style={styles.logo}
-/>
-
+          <Image source={logo} style={styles.logo} />
           <Text style={styles.title}>Dream Sport Facilities</Text>
         </View>
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={24} color="#008080" style={styles.icon} />
+            <Ionicons name="mail-outline" size={24} color="#008080" style={styles.icon} />
             <TextInput
               style={styles.input}
-              placeholder="Username"
+              placeholder="Email"
               placeholderTextColor="#666"
-              value={username}
-              onChangeText={setUsername}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -59,6 +86,9 @@ export default function LoginScreen({ onLogin }) {
           </View>
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('Register')}>
+            <Text style={styles.registerLinkText}>Don't have an account? Register</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -81,8 +111,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     resizeMode: 'contain',
   },
   title: {
@@ -122,4 +152,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  registerLink: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  registerLinkText: {
+    color: '#008080',
+    fontSize: 16,
+  },
 });
+
