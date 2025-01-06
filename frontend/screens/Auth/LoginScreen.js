@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,16 +10,16 @@ import {
   SafeAreaView,
   Image,
   Alert,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import logo from '../assets/images/logo.jpg';
-import config from '../config';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import logo from "../../assets/images/logo.jpg";
+import config from "../../config";
 
 export default function LoginScreen({ navigation, setUser }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
@@ -29,31 +29,31 @@ export default function LoginScreen({ navigation, setUser }) {
       });
 
       const { token } = response.data;
-    
-      // Store the token
-      await AsyncStorage.setItem('userToken', token);
 
-      // Decode the token
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-    
-      // Set the user in the app's state
+      
+      await AsyncStorage.setItem("userToken", token);
+
+      
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+
+      
       setUser(decodedToken);
 
-      // The navigation to 'Main' will be handled automatically in App.js
-      // when the user state changes
+      
+      
     } catch (error) {
-      let errorMessage = 'An error occurred during login.';
+      let errorMessage = "An error occurred during login.";
       if (error.response && error.response.data && error.response.data.msg) {
         errorMessage = error.response.data.msg;
       }
-      Alert.alert('Login Failed', errorMessage);
+      Alert.alert("Login Failed", errorMessage);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
         <View style={styles.logoContainer}>
@@ -62,7 +62,12 @@ export default function LoginScreen({ navigation, setUser }) {
         </View>
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Ionicons name="mail-outline" size={24} color="#008080" style={styles.icon} />
+            <Ionicons
+              name="mail-outline"
+              size={24}
+              color="#008080"
+              style={styles.icon}
+            />
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -74,7 +79,12 @@ export default function LoginScreen({ navigation, setUser }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={24} color="#008080" style={styles.icon} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={24}
+              color="#008080"
+              style={styles.icon}
+            />
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -87,8 +97,13 @@ export default function LoginScreen({ navigation, setUser }) {
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.registerLinkText}>Don't have an account? Register</Text>
+          <TouchableOpacity
+            style={styles.registerLink}
+            onPress={() => navigation.navigate("Register")}
+          >
+            <Text style={styles.registerLinkText}>
+              Don't have an account? Register
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -99,36 +114,36 @@ export default function LoginScreen({ navigation, setUser }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   keyboardAvoidingView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 16,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   logo: {
     width: 150,
     height: 150,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#008080',
+    fontWeight: "bold",
+    color: "#008080",
     marginTop: 10,
   },
   formContainer: {
-    width: '100%',
+    width: "100%",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: '#008080',
+    borderBottomColor: "#008080",
     marginBottom: 20,
   },
   icon: {
@@ -137,28 +152,27 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 40,
-    color: '#333',
+    color: "#333",
     fontSize: 16,
   },
   loginButton: {
-    backgroundColor: '#008080',
+    backgroundColor: "#008080",
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   loginButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   registerLink: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   registerLinkText: {
-    color: '#008080',
+    color: "#008080",
     fontSize: 16,
   },
 });
-

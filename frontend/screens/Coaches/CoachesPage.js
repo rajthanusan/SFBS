@@ -6,7 +6,7 @@ import { SafeAreaView, View, StyleSheet, TouchableOpacity, Text, Alert } from 'r
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-import HomeScreen from './HomeScreen';
+
 import CoachProfileScreen from './CoachProfileScreen';
 import RequestsScreen from './RequestsScreen';
 import BookingsScreen from './BookingsScreen';
@@ -44,9 +44,7 @@ function MainTabs({ navigation, setUser, user }) {
             let iconName;
 
             switch (route.name) {
-              case 'Home':
-                iconName = focused ? 'home' : 'home-outline';
-                break;
+            
               case 'Coach Profile':
                 iconName = focused ? 'person' : 'person-outline';
                 break;
@@ -97,6 +95,7 @@ function MainTabs({ navigation, setUser, user }) {
       >
        
        
+
         <Tab.Screen 
           name="Coach Profile" 
           options={{ title: 'Coach Profile' }}

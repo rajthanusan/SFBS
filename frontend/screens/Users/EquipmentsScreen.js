@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../config';
@@ -20,6 +21,7 @@ export default function EquipmentsScreen() {
   const [filteredEquipments, setFilteredEquipments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSport, setSelectedSport] = useState('');
 
   const fetchEquipments = useCallback(async () => {
     setIsLoading(true);
@@ -61,11 +63,23 @@ export default function EquipmentsScreen() {
     fetchEquipments();
   }, [fetchEquipments]);
 
+  const filterEquipments = (sport) => {
+    setSelectedSport(sport);
+    if (sport === '') {
+      setFilteredEquipments(equipments);
+    } else {
+      setFilteredEquipments(
+        equipments.filter((item) => item.sportName.toLowerCase() === sport.toLowerCase())
+      );
+    }
+  };
+
   const renderEquipmentItem = ({ item }) => (
     <View style={styles.equipmentCard}>
       <Image source={{ uri: item.image }} style={styles.equipmentImage} />
       <View style={styles.equipmentInfo}>
         <Text style={styles.equipmentName}>{item.equipmentName}</Text>
+        <Text style={styles.equipmentSport}>{item.sportName}</Text>
         <Text style={styles.equipmentPrice}>Rs. {item.rentPrice}/day</Text>
         <TouchableOpacity
           style={[styles.rentButton, !item.isActive && styles.rentButtonDisabled]}
@@ -79,22 +93,47 @@ export default function EquipmentsScreen() {
     </View>
   );
 
+  const uniqueSports = ['All', ...new Set(equipments.map((item) => item.sportName))];
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Sports Equipment</Text>
+        <Text style={styles.headerTitle}>Our Equipments</Text>
       </View>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterScrollView}
+      >
+        {uniqueSports.map((sport) => (
+          <TouchableOpacity
+            key={sport}
+            style={[
+              styles.filterButton,
+              selectedSport === (sport === 'All' ? '' : sport) && styles.filterButtonActive
+            ]}
+            onPress={() => filterEquipments(sport === 'All' ? '' : sport)}
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                selectedSport === (sport === 'All' ? '' : sport) && styles.filterButtonTextActive
+              ]}
+            >
+              {sport}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       <FlatList
         data={filteredEquipments}
         renderItem={renderEquipmentItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.equipmentsList}
         refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={fetchEquipments}
-            colors={['#008080']}
-          />
+          <RefreshControl refreshing={isLoading} onRefresh={fetchEquipments} colors={['#008080']} />
         }
         ListEmptyComponent={
           <Text style={styles.emptyListText}>
@@ -109,45 +148,83 @@ export default function EquipmentsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9fa',
   },
   header: {
     padding: 20,
     backgroundColor: '#008080',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  filterScrollView: {
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  filterButton: {
+    paddingVertical: 0,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    marginRight: 10,
+    minWidth: 80,
+    height: 40,
+   
+  },
+  filterButtonActive: {
+    backgroundColor: '#008080',
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center', // Center text horizontally
+    lineHeight: 40, // Adjust line height to prevent text clipping
+  },
+  filterButtonTextActive: {
     color: '#fff',
   },
   equipmentsList: {
-    padding: 16,
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
   equipmentCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 15,
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   equipmentImage: {
     width: '100%',
     height: 200,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   equipmentInfo: {
-    padding: 16,
+    padding: 15,
   },
   equipmentName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  equipmentSport: {
+    fontSize: 14,
+    color: '#008080',
+    marginTop: 4,
   },
   equipmentPrice: {
     fontSize: 16,
+    fontWeight: '600',
     color: '#008080',
     marginTop: 8,
   },
@@ -158,13 +235,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 12,
   },
-  rentButtonDisabled: {
-    backgroundColor: '#e0e0e0',
-  },
   rentButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  rentButtonDisabled: {
+    backgroundColor: '#cccccc',
   },
   emptyListText: {
     textAlign: 'center',

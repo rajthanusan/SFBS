@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Image } f
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../config';
-import { FontAwesome } from '@expo/vector-icons';  HomeScreen
+import { FontAwesome } from '@expo/vector-icons';  
 
 export default function CoachProfileScreen({ user }) {
   const [coachProfile, setCoachProfile] = useState(null);
@@ -25,7 +25,7 @@ export default function CoachProfileScreen({ user }) {
           throw new Error('No authentication token found');
         }
 
-        HomeScreen
+     
         const response = await axios.get(`${config.API_URL}/api/v1/coach-profile/coach/${user.id}`, {
           headers: {
             'Content-Type': 'application/json',

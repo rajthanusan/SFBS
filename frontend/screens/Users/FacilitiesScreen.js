@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { ScrollView } from 'react-native';
 import config from '../../config';
 
 const API_URL = `${config.API_URL}/api/v1/facilities/available`;
@@ -105,25 +106,27 @@ export default function FacilitiesScreen({ navigation }) {
 
   const renderCategoryButtons = () => (
     <View style={styles.filterContainer}>
-      {categories.map((category, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.filterButton,
-            selectedCategory === category && styles.activeFilterButton,
-          ]}
-          onPress={() => setSelectedCategory(category)}
-        >
-          <Text
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        {categories.map((category, index) => (
+          <TouchableOpacity
+            key={index}
             style={[
-              styles.filterButtonText,
-              selectedCategory === category && styles.activeFilterButtonText,
+              styles.filterButton,
+              selectedCategory === category && styles.filterButtonActive,
             ]}
+            onPress={() => setSelectedCategory(category)}
           >
-            {category}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            <Text
+              style={[
+                styles.filterButtonText,
+                selectedCategory === category && styles.filterButtonTextActive,
+              ]}
+            >
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   );
 
@@ -155,61 +158,65 @@ export default function FacilitiesScreen({ navigation }) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9fa', // Updated background color
   },
   header: {
     padding: 20,
     backgroundColor: '#008080',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#fff',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   filterContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap', // Prevent wrapping of buttons
+    justifyContent: 'flex-start', // Align buttons to the left
+    paddingVertical: 16,
     backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    overflow: 'hidden',  // Hide content that goes beyond the container
   },
+  
+
   filterButton: {
-    backgroundColor: '#e0e0e0',
-    paddingVertical: 8,
-    paddingHorizontal: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    margin: 4,
-    width: '45%', // Ensures two buttons fit per line
+    backgroundColor: '#f0f0f0',
+    marginRight: 10, // Added space between buttons
     alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,  // Ensures the button has a minimum width
+    elevation: 2, // Adds shadow for better effect
   },
-  activeFilterButton: {
+  filterButtonActive: {
     backgroundColor: '#008080',
   },
   filterButtonText: {
-    color: '#666',
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#333',
   },
-  activeFilterButtonText: {
+  filterButtonTextActive: {
     color: '#fff',
   },
   facilitiesList: {
-    padding: 16,
+    paddingHorizontal: 10,
   },
   facilityCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
     marginBottom: 16,
+    borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -217,25 +224,23 @@ const styles = StyleSheet.create({
   facilityImage: {
     width: '100%',
     height: 200,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   facilityInfo: {
     padding: 16,
   },
   facilityName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   facilityLocation: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 4,
+    fontSize: 14,
+    color: '#008080',
   },
   facilityCategory: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#008080',
-    marginTop: 4,
   },
   facilityPrice: {
     fontSize: 16,
