@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import config from '../../config';
 
-const API_URL = 'http://192.168.8.101:5000/api/v1/facilities/available';
+const API_URL = `${config.API_URL}/api/v1/facilities/available`;
 
 export default function FacilitiesScreen({ navigation }) {
   const [facilities, setFacilities] = useState([]);

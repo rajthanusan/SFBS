@@ -1,23 +1,20 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
-const sendEquipmentBookingConfirmationEmail = async (
-  userEmail,
-  bookingDetails
-) => {
+const sendEquipmentBookingConfirmationEmail = async (userEmail, bookingDetails) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail', 
     auth: {
-      user: "rajthanusan08@gmail.com",
-      pass: "gjfi fuas wekw lmwd",
+      user: 'chamindunipun77@gmail.com',
+      pass: 'oeyj kfpf vynd pjgk',
     },
   });
 
   const formattedDate = new Date(bookingDetails.dateTime).toLocaleDateString();
 
   const mailOptions = {
-    from: "rajthanusan08@gmail.com",
+    from: 'chamindunipun77@gmail.com',
     to: userEmail,
-    subject: "Equipment Booking Confirmation",
+    subject: 'Equipment Booking Confirmation',
     html: `
       <h1>Equipment Booking Confirmation</h1>
       <p>Dear ${bookingDetails.userName},</p>
@@ -40,7 +37,7 @@ const sendEquipmentBookingConfirmationEmail = async (
       //   path: bookingDetails.receipt,
       // },
       {
-        filename: "qrcode.png",
+        filename: 'qrcode.png',
         path: bookingDetails.qrCode,
       },
     ],

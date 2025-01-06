@@ -11,8 +11,9 @@ import {
   RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../../config';
 
-const API_URL = 'http://192.168.8.101:5000/api/v1/equipment/available';
+const API_URL = `${config.API_URL}/api/v1/equipment/available`;
 
 export default function EquipmentsScreen() {
   const [equipments, setEquipments] = useState([]);

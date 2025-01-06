@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Define the schema for facility Booking
 const FacilityBookingSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,

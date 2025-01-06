@@ -1,33 +1,25 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
-const sendSessionBookingConfirmationEmail = async (
-  userEmail,
-  bookingDetails
-) => {
+const sendSessionBookingConfirmationEmail = async (userEmail, bookingDetails) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail', 
     auth: {
-      user: "rajthanusan08@gmail.com",
-      pass: "gjfi fuas wekw lmwd",
+      user: 'chamindunipun77@gmail.com',
+      pass: 'oeyj kfpf vynd pjgk',
     },
   });
 
   // Format the date to DD/MM/YYYY and include the time slot
-  const formattedTimeSlots = bookingDetails.bookedTimeSlots
-    .map((slot) => {
-      const date = new Date(slot.date);
-      const formattedDate = `${String(date.getDate()).padStart(
-        2,
-        "0"
-      )}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-      return `${formattedDate} ${slot.timeSlot}`;
-    })
-    .join(", ");
+  const formattedTimeSlots = bookingDetails.bookedTimeSlots.map(slot => {
+    const date = new Date(slot.date);
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    return `${formattedDate} ${slot.timeSlot}`;
+  }).join(', ');
 
   const mailOptions = {
-    from: "rajthanusan08@gmail.com",
+    from: 'chamindunipun77@gmail.com',
     to: userEmail,
-    subject: "Session Booking Confirmation",
+    subject: 'Session Booking Confirmation',
     html: `
       <h1>Session Booking Confirmation</h1>
       <p>Dear ${bookingDetails.userName},</p>
@@ -47,7 +39,7 @@ const sendSessionBookingConfirmationEmail = async (
     `,
     attachments: [
       {
-        filename: "qrcode.png",
+        filename: 'qrcode.png',
         path: bookingDetails.qrCodeUrl,
       },
     ],

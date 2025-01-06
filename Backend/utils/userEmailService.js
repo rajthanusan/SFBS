@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 /**
  * Sends a registration confirmation email to the user.
@@ -7,17 +7,17 @@ const nodemailer = require("nodemailer");
  */
 const sendUserRegistrationEmail = async (userEmail, userName) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      user: "rajthanusan08@gmail.com", // Change this to environment variables in production
-      pass: "gjfi fuas wekw lmwd", // Use environment variables for sensitive data
+      user: 'chamindunipun77@gmail.com',  // Change this to environment variables in production
+      pass: 'oeyj kfpf vynd pjgk',        // Use environment variables for sensitive data
     },
   });
 
   const mailOptions = {
-    from: "rajthanusan08@gmail.com",
+    from: 'chamindunipun77@gmail.com',
     to: userEmail,
-    subject: "Registration Successful - Welcome to Dream Sports",
+    subject: 'Registration Successful - Welcome to Dream Sports',
     html: `
       <h1>Welcome, ${userName}!</h1>
       <p>Thank you for registering at Dream Sports. Your account has been created successfully.</p>

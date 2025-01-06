@@ -15,15 +15,14 @@ export default function App() {
 
   useEffect(() => {
     const bootstrapAsync = async () => {
-      let userToken;
+      let userData;
       try {
-        userToken = await AsyncStorage.getItem('userToken');
-        if (userToken) {
-          const decodedToken = JSON.parse(atob(userToken.split('.')[1]));
-          setUser(decodedToken);
+        userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          setUser(JSON.parse(userData));
         }
       } catch (e) {
-        console.error('Restoring token failed', e);
+        console.error('Restoring user data failed', e);
       }
       setIsLoading(false);
     };
@@ -51,9 +50,9 @@ export default function App() {
           <Stack.Screen name="Main">
             {(props) => 
               user.role === 'User' ? (
-                <UserNavigation {...props} setUser={setUser} />
+                <UserNavigation {...props} setUser={setUser} user={user} />
               ) : (
-                <CoachNavigation {...props} setUser={setUser} />
+                <CoachNavigation {...props} setUser={setUser} user={user} />
               )
             }
           </Stack.Screen>

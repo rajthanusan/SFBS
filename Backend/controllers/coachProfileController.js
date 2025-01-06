@@ -117,7 +117,7 @@ exports.updateCoachProfile = async (req, res) => {
 
 // Upload a coach profile image using Cloudinary
 exports.uploadCoachProfileImage = [
-  upload.single('image'), 
+  upload.single('image'), // Use multer middleware for single image upload
   async (req, res) => {
     try {
       if (!req.file) {
@@ -147,7 +147,7 @@ exports.uploadCoachProfileImage = [
 
 // Update a coach profile image using Cloudinary
 exports.updateCoachProfileImage = [
-  upload.single('image'), 
+  upload.single('image'), // Use multer middleware for single image upload
   async (req, res) => {
     try {
       if (!req.file) {
@@ -174,6 +174,9 @@ exports.updateCoachProfileImage = [
     }
   }
 ];
+
+// Other methods (getAllCoachProfiles, getCoachProfileByCoachProfileId, etc.) remain unchanged
+
 
 
 // Get all coach profiles with average ratings

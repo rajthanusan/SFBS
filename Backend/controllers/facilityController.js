@@ -65,6 +65,7 @@ exports.updateFacility = [
         return res.status(404).json({ msg: 'Facility not found.' });
       }
 
+      // Update facility fields
       facility.courtNumber = courtNumber || facility.courtNumber;
       facility.sportName = sportName || facility.sportName;
       facility.sportCategory = sportCategory || facility.sportCategory;

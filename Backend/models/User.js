@@ -19,12 +19,14 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    // Do not require a password for OAuth users
     required: function () {
+      // Only require a password if the user does not have an OAuth provider
       return !this.googleId;
     },
   },
   googleId: {
-    type: String, 
+    type: String, // Store Google ID for OAuth users
     default: null,
   },
   
@@ -47,6 +49,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// Encrypt password before saving the user
 UserSchema.pre('save', function (next) {
   if (!this.isModified('password')) {
     return next();

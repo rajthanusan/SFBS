@@ -1,23 +1,20 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
-const sendFacilityBookingConfirmationEmail = async (
-  userEmail,
-  bookingDetails
-) => {
+const sendFacilityBookingConfirmationEmail = async (userEmail, bookingDetails) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail', 
     auth: {
-      user: "rajthanusan08@gmail.com",
-      pass: "gjfi fuas wekw lmwd",
+      user: 'chamindunipun77@gmail.com',
+      pass: 'oeyj kfpf vynd pjgk',
     },
   });
 
   const formattedDate = new Date(bookingDetails.date).toLocaleDateString();
 
   const mailOptions = {
-    from: "rajthanusan08@gmail.com",
+    from: 'chamindunipun77@gmail.com',
     to: userEmail,
-    subject: "Facility Booking Confirmation",
+    subject: 'Facility Booking Confirmation',
     html: `
       <h1>Facility Booking Confirmation</h1>
       <p>Dear ${bookingDetails.userName},</p>
@@ -27,7 +24,7 @@ const sendFacilityBookingConfirmationEmail = async (
         <li>Sport Name: ${bookingDetails.sportName}</li>
         <li>Court Number: ${bookingDetails.courtNumber}</li>
         <li>Date: ${formattedDate}</li>
-        <li>Time Slots: ${bookingDetails.timeSlots.join(", ")}</li>
+        <li>Time Slots: ${bookingDetails.timeSlots.join(', ')}</li>
         <li>Total Hours: ${bookingDetails.totalHours}</li>
         <li>Total Payment: Rs. ${bookingDetails.totalPrice}/=</li>
       </ul>
@@ -40,7 +37,7 @@ const sendFacilityBookingConfirmationEmail = async (
       //   path: bookingDetails.receipt,
       // },
       {
-        filename: "qrcode.png",
+        filename: 'qrcode.png',
         path: bookingDetails.qrCode,
       },
     ],
@@ -50,3 +47,5 @@ const sendFacilityBookingConfirmationEmail = async (
 };
 
 module.exports = sendFacilityBookingConfirmationEmail;
+
+
