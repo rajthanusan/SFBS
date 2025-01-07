@@ -4,8 +4,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StatusBar } from 'react-native';
 
-// Import screens
 import HomeScreen from './HomeScreen';
 import FacilitiesScreen from './FacilitiesScreen';
 import EquipmentsScreen from './EquipmentsScreen';
@@ -24,13 +24,13 @@ function LogoutButton({ onPress }) {
   );
 }
 
-function MainTabs({ navigation, setUser }) {
+function MainTabs({ navigation, setUser, user }) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
       setUser(null);
-      // The navigation to 'Login' will be handled automatically in App.js
-      // when the user state changes to null
+      
+      
     } catch (error) {
       console.error('Error logging out:', error);
       Alert.alert('Logout Error', 'An error occurred while logging out. Please try again.');
@@ -89,38 +89,29 @@ function MainTabs({ navigation, setUser }) {
         <Tab.Screen
           name="Home"
           component={HomeScreen}
-          options={{
-            title: 'Home',
-          }}
+          options={{ title: 'Home' }}
         />
         <Tab.Screen
           name="Facilities"
           component={FacilitiesScreen}
-          options={{
-            title: 'Facilities',
-          }}
+          options={{ title: 'Facilities' }}
         />
         <Tab.Screen
           name="Equipment"
           component={EquipmentsScreen}
-          options={{
-            title: 'Equipment',
-          }}
+          options={{ title: 'Equipment' }}
         />
         <Tab.Screen
           name="Coaches"
           component={CoachesScreen}
-          options={{
-            title: 'Coaches',
-          }}
+          options={{ title: 'Coaches' }}
         />
         <Tab.Screen
           name="My Bookings"
-          component={MyBookingsScreen}
-          options={{
-            title: 'Bookings',
-          }}
-        />
+          options={{ title: 'Bookings' }}
+        >
+          {(props) => <MyBookingsScreen {...props} user={user} />}
+        </Tab.Screen>
         <Tab.Screen
           name="Logout"
           component={View}
@@ -135,7 +126,7 @@ function MainTabs({ navigation, setUser }) {
   );
 }
 
-export default function UserNavigation({ navigation, setUser }) {
+export default function UserNavigation({ navigation, setUser, user }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -144,7 +135,7 @@ export default function UserNavigation({ navigation, setUser }) {
       }}
     >
       <Stack.Screen name="MainTabs">
-        {(props) => <MainTabs {...props} setUser={setUser} />}
+        {(props) => <MainTabs {...props} setUser={setUser} user={user} />}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -167,4 +158,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-

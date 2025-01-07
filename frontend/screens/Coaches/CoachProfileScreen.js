@@ -154,7 +154,7 @@ CoachProfileScreen.propTypes = {
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
     role: PropTypes.string.isRequired,
-    isActive: PropTypes.bool.isRequired,
+    isActive: PropTypes.bool,
     createdAt: PropTypes.string.isRequired,
   }).isRequired,
 };

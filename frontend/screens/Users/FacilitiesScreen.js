@@ -9,10 +9,10 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { ScrollView } from 'react-native';
 import config from '../../config';
 
 const API_URL = `${config.API_URL}/api/v1/facilities/available`;
@@ -105,29 +105,27 @@ export default function FacilitiesScreen({ navigation }) {
   );
 
   const renderCategoryButtons = () => (
-    <View style={styles.filterContainer}>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {categories.map((category, index) => (
-          <TouchableOpacity
-            key={index}
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+      {categories.map((category, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.filterButton,
+            selectedCategory === category && styles.filterButtonActive,
+          ]}
+          onPress={() => setSelectedCategory(category)}
+        >
+          <Text
             style={[
-              styles.filterButton,
-              selectedCategory === category && styles.filterButtonActive,
+              styles.filterButtonText,
+              selectedCategory === category && styles.filterButtonTextActive,
             ]}
-            onPress={() => setSelectedCategory(category)}
           >
-            <Text
-              style={[
-                styles.filterButtonText,
-                selectedCategory === category && styles.filterButtonTextActive,
-              ]}
-            >
-              {category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+            {category}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 
   return (
@@ -135,13 +133,12 @@ export default function FacilitiesScreen({ navigation }) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Our Facilities</Text>
       </View>
+      {renderCategoryButtons()}
       <FlatList
         data={filteredFacilities}
         renderItem={renderFacilityItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.facilitiesList}
-        ListHeaderComponent={renderCategoryButtons}
-        stickyHeaderIndices={[0]} // Ensures the filter buttons stay fixed while scrolling
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
@@ -158,10 +155,11 @@ export default function FacilitiesScreen({ navigation }) {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa', // Updated background color
+    backgroundColor: '#f8f9fa',
   },
   header: {
     padding: 20,
@@ -172,30 +170,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    marginBottom: 10,
   },
-  filterContainer: {
-    flexDirection: 'row',
-    flexWrap: 'nowrap', // Prevent wrapping of buttons
-    justifyContent: 'flex-start', // Align buttons to the left
-    paddingVertical: 16,
+  filterScrollView: {
+    paddingVertical: 15,
+    paddingHorizontal: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    overflow: 'hidden',  // Hide content that goes beyond the container
   },
-  
-
   filterButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 0,
+    paddingHorizontal: 16,
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
-    marginRight: 10, // Added space between buttons
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 80,  // Ensures the button has a minimum width
-    elevation: 2, // Adds shadow for better effect
+    marginRight: 10,
+    minWidth: 80,
+    height: 40,
+    marginBottom: 15,
+   
   },
   filterButtonActive: {
     backgroundColor: '#008080',
@@ -204,22 +196,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#333',
+    textAlign: 'center',
+    lineHeight: 40,
   },
   filterButtonTextActive: {
     color: '#fff',
   },
   facilitiesList: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
   facilityCard: {
     backgroundColor: '#fff',
-    marginBottom: 16,
+    marginBottom: 15,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   facilityImage: {
     width: '100%',
@@ -228,7 +223,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   facilityInfo: {
-    padding: 16,
+    padding: 15,
   },
   facilityName: {
     fontSize: 18,
@@ -237,13 +232,16 @@ const styles = StyleSheet.create({
   facilityLocation: {
     fontSize: 14,
     color: '#008080',
+    marginTop: 4,
   },
   facilityCategory: {
     fontSize: 14,
-    color: '#008080',
+    color: '#333',
+    marginTop: 4,
   },
   facilityPrice: {
     fontSize: 16,
+    fontWeight: '600',
     color: '#008080',
     marginTop: 8,
   },

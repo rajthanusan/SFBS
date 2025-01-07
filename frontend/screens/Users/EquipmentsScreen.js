@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     minWidth: 80,
     height: 40,
+    marginBottom: 15,
    
   },
   filterButtonActive: {
@@ -184,8 +185,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#333',
-    textAlign: 'center', // Center text horizontally
-    lineHeight: 40, // Adjust line height to prevent text clipping
+    textAlign: 'center', 
+    lineHeight: 40, 
   },
   filterButtonTextActive: {
     color: '#fff',

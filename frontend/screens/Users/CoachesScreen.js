@@ -175,7 +175,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
     marginRight: 10,
+    minWidth: 80,
     height: 40,
+    marginBottom: 15,
+   
   },
   filterButtonActive: {
     backgroundColor: '#008080',
@@ -184,12 +187,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#333',
-    textAlign: 'center', // Center text horizontally
-    lineHeight: 50,},
-
+    textAlign: 'center', 
+    lineHeight: 40, 
+  },
   filterButtonTextActive: {
     color: '#fff',
-    lineHeight: 40,
   },
   coachesList: {
     paddingHorizontal: 15,
