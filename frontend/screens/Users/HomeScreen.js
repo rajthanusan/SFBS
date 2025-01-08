@@ -38,7 +38,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={bannerImage} style={styles.banner}>
-        <Text style={styles.header}>Welcome to Sports Hub</Text>
+        <Text style={styles.header}>Welcome to Dream Sport</Text>
       </ImageBackground>
 
       <FlatList
@@ -52,10 +52,13 @@ export default function HomeScreen() {
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.featuresList}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       />
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

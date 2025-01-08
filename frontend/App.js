@@ -7,6 +7,13 @@ import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
 import UserNavigation from './screens/Users/UserPage';
 import CoachNavigation from './screens/Coaches/CoachesPage';
+import FacilitiesScreen from './screens/Users/FacilitiesScreen';
+import BookFacility from './screens/Users/BookFacility';
+import EquipmentsScreen from './screens/Users/EquipmentsScreen';
+import BookEquipment from './screens/Users/BookEquipment';
+import CoachesScreen from './screens/Users/CoachesScreen';
+import CoachesScreenBooking from './screens/Users/CoachesScreenBooking';
+import CoachProfileScreen from './screens/Users/CoachProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -54,15 +61,38 @@ export default function App() {
               </Stack.Screen>
             </>
           ) : (
-            <Stack.Screen name="Main">
-              {(props) => 
-                user.role === 'User' ? (
-                  <UserNavigation {...props} setUser={setUser} user={user} />
-                ) : (
-                  <CoachNavigation {...props} setUser={setUser} user={user} />
-                )
-              }
-            </Stack.Screen>
+            <>
+              <Stack.Screen name="Main">
+                {(props) => 
+                  user.role === 'User' ? (
+                    <UserNavigation {...props} setUser={setUser} user={user} />
+                  ) : (
+                    <CoachNavigation {...props} setUser={setUser} user={user} />
+                  )
+                }
+              </Stack.Screen>
+              <Stack.Screen name="Facilities">
+                {(props) => <FacilitiesScreen {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="BookFacility">
+                {(props) => <BookFacility {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="Equipments">
+                {(props) => <EquipmentsScreen {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="BookEquipment">
+                {(props) => <BookEquipment {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="Coaches">
+                {(props) => <CoachesScreen {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="CoachesBooking">
+                {(props) => <CoachesScreenBooking {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="CoachProfile">
+          {(props) => <CoachProfileScreen {...props} user={user} />}
+        </Stack.Screen>
+            </>
           )}
         </Stack.Navigator>
       </NavigationContainer>

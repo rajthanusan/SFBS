@@ -17,7 +17,7 @@ import config from '../../config';
 
 const API_URL = `${config.API_URL}/api/v1/facilities/available`;
 
-export default function FacilitiesScreen({ navigation }) {
+export default function FacilitiesScreen({ navigation, user }) {
   const [facilities, setFacilities] = useState([]);
   const [filteredFacilities, setFilteredFacilities] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -86,7 +86,7 @@ export default function FacilitiesScreen({ navigation }) {
   }, [selectedCategory, facilities]);
 
   const handleBooking = (facility) => {
-    navigation.navigate('BookFacility', { facility });
+    navigation.navigate('BookFacility', { facility, user });
   };
 
   const renderFacilityItem = ({ item }) => (
@@ -151,6 +151,7 @@ export default function FacilitiesScreen({ navigation }) {
             {isLoading ? 'Loading facilities...' : 'No facilities available'}
           </Text>
         }
+        
       />
     </SafeAreaView>
   );

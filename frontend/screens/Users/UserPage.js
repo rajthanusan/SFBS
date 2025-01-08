@@ -91,21 +91,27 @@ function MainTabs({ navigation, setUser, user }) {
           component={HomeScreen}
           options={{ title: 'Home' }}
         />
-        <Tab.Screen
-          name="Facilities"
-          component={FacilitiesScreen}
-          options={{ title: 'Facilities' }}
-        />
-        <Tab.Screen
-          name="Equipment"
-          component={EquipmentsScreen}
-          options={{ title: 'Equipment' }}
-        />
-        <Tab.Screen
-          name="Coaches"
-          component={CoachesScreen}
-          options={{ title: 'Coaches' }}
-        />
+       <Tab.Screen
+  name="Facilities"
+  options={{ title: 'Facilities' }}
+>
+  {(props) => <FacilitiesScreen {...props} user={user} />}
+</Tab.Screen>
+<Tab.Screen
+  name="Equipment"
+  options={{ title: 'Equipment' }}
+>
+  {(props) => <EquipmentsScreen {...props} user={user} />}
+</Tab.Screen>
+
+<Tab.Screen
+  name="Coaches"
+  options={{ title: 'Coaches' }}
+>
+  {(props) => <CoachesScreen {...props} user={user} />}
+</Tab.Screen>
+       
+      
         <Tab.Screen
           name="My Bookings"
           options={{ title: 'Bookings' }}

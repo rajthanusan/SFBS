@@ -13,18 +13,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import config from '../../config';
 
 const API_URL = `${config.API_URL}/api/v1/coach-profile/All`;
 
 const LEVELS = ['All', 'Professional', 'Intermediate', 'Beginner'];
 
-export default function CoachesScreen() {
+function CoachesScreen({ user }) {
   const [coaches, setCoaches] = useState([]);
   const [filteredCoaches, setFilteredCoaches] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigation = useNavigation();
 
   const fetchCoaches = useCallback(async () => {
     setIsLoading(true);
@@ -78,33 +81,58 @@ export default function CoachesScreen() {
         <Text style={styles.coachSport}>{item.coachingSport}</Text>
         <Text style={styles.coachExperience}>{item.experience} experience</Text>
         <View style={styles.ratingContainer}>
-          <Text style={styles.ratingText}>Rating: {item.avgRating || 'N/A'}</Text>
-          <View style={styles.stars}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Ionicons
-                key={star}
-                name={star <= (item.avgRating || 0) ? 'star' : 'star-outline'}
-                size={16}
-                color="#FFB347"
-              />
-            ))}
-          </View>
+          {item.avgRating ? (
+            <>
+              <Text style={styles.ratingText}>Rating: {parseFloat(item.avgRating).toFixed(2)}</Text>
+              <View style={styles.stars}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Ionicons
+                    key={star}
+                    name={star <= Math.round(item.avgRating) ? 'star' : 'star-outline'}
+                    size={16}
+                    color="#FFB347"
+                  />
+                ))}
+              </View>
+            </>
+          ) : (
+            <Text style={styles.ratingText}>No ratings yet</Text>
+          )}
         </View>
-        <TouchableOpacity style={styles.bookButton}>
-          <Text style={styles.bookButtonText}>Book Session</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.viewButton}
+            onPress={() => navigation.navigate('CoachProfile', {
+              coach: item,
+              user
+            })}
+          >
+            <Text style={styles.viewButtonText}>View Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => navigation.navigate('CoachesBooking', {
+              coach: item,
+              user,
+              availableTimeSlots: item.availableTimeSlots,
+              offerSessions: item.offerSessions
+            })}
+          >
+            <Text style={styles.bookButtonText}>Book Session</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Our Coaches</Text>
       </View>
 
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterScrollView}
       >
@@ -147,6 +175,13 @@ export default function CoachesScreen() {
   );
 }
 
+CoachesScreen.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -178,7 +213,6 @@ const styles = StyleSheet.create({
     minWidth: 80,
     height: 40,
     marginBottom: 15,
-   
   },
   filterButtonActive: {
     backgroundColor: '#008080',
@@ -187,8 +221,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#333',
-    textAlign: 'center', 
-    lineHeight: 40, 
+    textAlign: 'center',
+    lineHeight: 40,
   },
   filterButtonTextActive: {
     color: '#fff',
@@ -243,12 +277,32 @@ const styles = StyleSheet.create({
   stars: {
     flexDirection: 'row',
   },
-  bookButton: {
-    backgroundColor: '#008080',
-    padding: 12,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  viewButton: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    paddingVertical: 8,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#008080',
+    marginRight: 8,
+  },
+  viewButtonText: {
+    color: '#008080',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  bookButton: {
+    flex: 1,
+    backgroundColor: '#008080',
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   bookButtonText: {
     color: '#fff',
@@ -262,4 +316,6 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 });
+
+export default CoachesScreen;
 

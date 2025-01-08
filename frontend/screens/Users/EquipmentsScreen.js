@@ -12,16 +12,18 @@ import {
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import config from '../../config';
 
 const API_URL = `${config.API_URL}/api/v1/equipment/available`;
 
-export default function EquipmentsScreen() {
+export default function EquipmentsScreen({ user }) {
   const [equipments, setEquipments] = useState([]);
   const [filteredEquipments, setFilteredEquipments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedSport, setSelectedSport] = useState('');
+  const navigation = useNavigation();
 
   const fetchEquipments = useCallback(async () => {
     setIsLoading(true);
@@ -84,6 +86,7 @@ export default function EquipmentsScreen() {
         <TouchableOpacity
           style={[styles.rentButton, !item.isActive && styles.rentButtonDisabled]}
           disabled={!item.isActive}
+          onPress={() => navigation.navigate('BookEquipment', { equipment: item, user })}
         >
           <Text style={styles.rentButtonText}>
             {item.isActive ? 'Rent Now' : 'Not Available'}

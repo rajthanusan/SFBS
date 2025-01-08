@@ -84,7 +84,11 @@ const MyBookingsScreen = ({ user }) => {
       </View>
 
       {/* Filter Buttons with dynamic status options */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+      <View style={styles.scrollContainer}>
+  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+    {/* Filter buttons */}
+  
+
   {/* "All" button first */}
   <TouchableOpacity
     style={[styles.filterButton, !statusFilter && styles.filterButtonActive]}
@@ -104,6 +108,7 @@ const MyBookingsScreen = ({ user }) => {
     </TouchableOpacity>
   ))}
 </ScrollView>
+</View>
 
 
       {/* Display bookings */}
@@ -143,13 +148,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  
   filterScrollView: {
     paddingVertical: 15,
     paddingHorizontal: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-  },
+    flexDirection: 'row',
+    overflow: 'scroll',
+  }
+,  
   filterButton: {
     paddingVertical: 0,
     paddingHorizontal: 16,
@@ -176,32 +189,35 @@ const styles = StyleSheet.create({
   },
   bookingCard: {
     backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
+    padding: 20,
+    marginBottom: 15,
+    borderRadius: 15,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 5,
+
   },
   bookingTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#333',
   },
   bookingText: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 4,
+    fontSize: 15,
+    color: '#555',
+    marginTop: 6,
   },
   flatList: {
     paddingHorizontal: 15,
   },
   noBookingsText: {
     textAlign: 'center',
-    fontSize: 16,
-    color: '#666',
-    marginTop: 20,
+    fontSize: 18,
+    color: '#999',
+    marginTop: 30,
+    fontWeight: '500',
   },
 });
 
