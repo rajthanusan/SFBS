@@ -7,6 +7,7 @@ import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
 import UserNavigation from './screens/Users/UserPage';
 import CoachNavigation from './screens/Coaches/CoachesPage';
+import GuardPage from './screens/Guard/GuardPage';
 import FacilitiesScreen from './screens/Users/FacilitiesScreen';
 import BookFacility from './screens/Users/BookFacility';
 import EquipmentsScreen from './screens/Users/EquipmentsScreen';
@@ -14,6 +15,9 @@ import BookEquipment from './screens/Users/BookEquipment';
 import CoachesScreen from './screens/Users/CoachesScreen';
 import CoachesScreenBooking from './screens/Users/CoachesScreenBooking';
 import CoachProfileScreen from './screens/Users/CoachProfileScreen';
+import MyBookingsScreen from './screens/Users/MyBookingsScreen';
+import MyBookingBook from './screens/Users/MyBookingBook';
+
 
 const Stack = createStackNavigator();
 
@@ -63,13 +67,18 @@ export default function App() {
           ) : (
             <>
               <Stack.Screen name="Main">
-                {(props) => 
-                  user.role === 'User' ? (
-                    <UserNavigation {...props} setUser={setUser} user={user} />
-                  ) : (
-                    <CoachNavigation {...props} setUser={setUser} user={user} />
-                  )
-                }
+                {(props) => {
+                  switch (user.role) {
+                    case 'User':
+                      return <UserNavigation {...props} setUser={setUser} user={user} />;
+                    case 'Coach':
+                      return <CoachNavigation {...props} setUser={setUser} user={user} />;
+                    case 'Guard':
+                      return <GuardPage {...props} setUser={setUser} user={user} />;
+                    default:
+                      return <LoginScreen {...props} setUser={setUser} />;
+                  }
+                }}
               </Stack.Screen>
               <Stack.Screen name="Facilities">
                 {(props) => <FacilitiesScreen {...props} user={user} />}
@@ -90,8 +99,14 @@ export default function App() {
                 {(props) => <CoachesScreenBooking {...props} user={user} />}
               </Stack.Screen>
               <Stack.Screen name="CoachProfile">
-          {(props) => <CoachProfileScreen {...props} user={user} />}
-        </Stack.Screen>
+                {(props) => <CoachProfileScreen {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="MyBookings">
+                {(props) => <MyBookingsScreen {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="MyBookingBook">
+                {(props) => <MyBookingBook {...props} user={user} />}
+              </Stack.Screen>
             </>
           )}
         </Stack.Navigator>
@@ -99,4 +114,3 @@ export default function App() {
     </SafeAreaView>
   );
 }
-

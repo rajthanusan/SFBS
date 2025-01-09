@@ -45,7 +45,7 @@ function MainTabs({ navigation, setUser, user }) {
 
             switch (route.name) {
             
-              case 'Coach Profile':
+              case 'Profile':
                 iconName = focused ? 'person' : 'person-outline';
                 break;
               case 'Requests':
@@ -86,6 +86,7 @@ function MainTabs({ navigation, setUser, user }) {
           },
           headerStyle: {
             backgroundColor: '#008080',
+            height: 70,
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -97,8 +98,8 @@ function MainTabs({ navigation, setUser, user }) {
        
 
         <Tab.Screen 
-          name="Coach Profile" 
-          options={{ title: 'Coach Profile' }}
+          name="Profile" 
+          options={{ title: 'Profile' }}
         >
           {(props) => <CoachProfileScreen {...props} user={user} />}
         </Tab.Screen>
