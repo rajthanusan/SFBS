@@ -7,7 +7,7 @@ import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
 import UserNavigation from './screens/Users/UserPage';
 import CoachNavigation from './screens/Coaches/CoachesPage';
-import GuardPage from './screens/Guard/GuardPage';
+import GuardPage from './screens/Guard/GuardHomePage';
 import FacilitiesScreen from './screens/Users/FacilitiesScreen';
 import BookFacility from './screens/Users/BookFacility';
 import EquipmentsScreen from './screens/Users/EquipmentsScreen';
