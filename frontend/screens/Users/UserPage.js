@@ -91,12 +91,14 @@ function MainTabs({ navigation, setUser, user }) {
           component={HomeScreen}
           options={{ title: 'Home' }}
         />
+        
        <Tab.Screen
   name="Facilities"
   options={{ title: 'Facilities' }}
 >
   {(props) => <FacilitiesScreen {...props} user={user} />}
 </Tab.Screen>
+
 <Tab.Screen
   name="Equipment"
   options={{ title: 'Equipment' }}

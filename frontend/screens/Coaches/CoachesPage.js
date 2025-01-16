@@ -11,7 +11,7 @@ import CoachProfileScreen from './CoachProfileScreen';
 import RequestsScreen from './RequestsScreen';
 import BookingsScreen from './BookingsScreen';
 import FacilitiesScreen from './FacilitiesScreen';
-import EquipmentScreen from './EquipmentScreen';
+import EquipmentScreen from './EquipmentsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -54,10 +54,10 @@ function MainTabs({ navigation, setUser, user }) {
               case 'Bookings':
                 iconName = focused ? 'calendar' : 'calendar-outline';
                 break;
-              case 'Facilities':
+              case 'FacilitiesCoach':
                 iconName = focused ? 'business' : 'business-outline';
                 break;
-              case 'Equipment':
+              case 'EquipmentsCoach':
                 iconName = focused ? 'basketball' : 'basketball-outline';
                 break;
               case 'Logout':
@@ -103,10 +103,36 @@ function MainTabs({ navigation, setUser, user }) {
         >
           {(props) => <CoachProfileScreen {...props} user={user} />}
         </Tab.Screen>
-        <Tab.Screen name="Requests" component={RequestsScreen} options={{ title: 'Requests' }} />
-        <Tab.Screen name="Bookings" component={BookingsScreen} options={{ title: 'Bookings' }} />
-        <Tab.Screen name="Facilities" component={FacilitiesScreen} options={{ title: 'Facilities' }} />
-        <Tab.Screen name="Equipment" component={EquipmentScreen} options={{ title: 'Equipment' }} />
+        <Tab.Screen 
+          name="Requests" 
+          options={{ title: 'Requests' }}
+        >
+          {(props) => <RequestsScreen {...props} user={user} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="Bookings" 
+          options={{ title: 'Bookings' }}
+        >
+          {(props) => <BookingsScreen {...props} user={user} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="FacilitiesCoach" 
+          options={{ title: 'Facilities' }}
+        >
+          {(props) => <FacilitiesScreen {...props} user={user} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="EquipmentsCoach" 
+          options={{ title: 'Equipment' }}
+        >
+          {(props) => <EquipmentScreen {...props} user={user} />}
+        </Tab.Screen>
+
+       
+      
         <Tab.Screen
           name="Logout"
           component={View}

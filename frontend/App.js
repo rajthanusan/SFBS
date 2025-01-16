@@ -12,11 +12,16 @@ import FacilitiesScreen from './screens/Users/FacilitiesScreen';
 import BookFacility from './screens/Users/BookFacility';
 import EquipmentsScreen from './screens/Users/EquipmentsScreen';
 import BookEquipment from './screens/Users/BookEquipment';
+import FacilitiesScreenCoach from './screens/Coaches/FacilitiesScreen';
+import BookFacilityCoach from './screens/Coaches/BookFacility';
+import EquipmentsScreenCoach from './screens/Coaches/EquipmentsScreen';
+import BookEquipmentCoach from './screens/Coaches/BookEquipment';
 import CoachesScreen from './screens/Users/CoachesScreen';
 import CoachesScreenBooking from './screens/Users/CoachesScreenBooking';
 import CoachProfileScreen from './screens/Users/CoachProfileScreen';
 import MyBookingsScreen from './screens/Users/MyBookingsScreen';
 import MyBookingBook from './screens/Users/MyBookingBook';
+import CourtBooking from './screens/Coaches/CourtBooking';
 
 
 const Stack = createStackNavigator();
@@ -92,6 +97,20 @@ export default function App() {
               <Stack.Screen name="BookEquipment">
                 {(props) => <BookEquipment {...props} user={user} />}
               </Stack.Screen>
+
+              <Stack.Screen name="FacilitiesCoach">
+                {(props) => <FacilitiesScreenCoach {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="BookFacilityCoach">
+                {(props) => <BookFacilityCoach {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="EquipmentsCoach">
+                {(props) => <EquipmentsScreenCoach {...props} user={user} />}
+              </Stack.Screen>
+              <Stack.Screen name="BookEquipmentCoach">
+                {(props) => <BookEquipmentCoach {...props} user={user} />}
+              </Stack.Screen>
+
               <Stack.Screen name="Coaches">
                 {(props) => <CoachesScreen {...props} user={user} />}
               </Stack.Screen>
@@ -107,6 +126,7 @@ export default function App() {
               <Stack.Screen name="MyBookingBook">
                 {(props) => <MyBookingBook {...props} user={user} />}
               </Stack.Screen>
+              <Stack.Screen name="CourtBooking" component={CourtBooking} />
             </>
           )}
         </Stack.Navigator>
