@@ -133,12 +133,13 @@ export default function MyBookingsScreen({ navigation, user }) {
         </ScrollView>
 
         {filteredBookings.length > 0 ? (
-          <FlatList
-            data={filteredBookings}
-            keyExtractor={(item) => item._id}
-            renderItem={renderBookingItem}
-            contentContainerStyle={styles.flatList}
-          />
+         <FlatList
+         data={filteredBookings}
+         keyExtractor={(item) => item._id}
+         renderItem={renderBookingItem}
+         contentContainerStyle={[styles.flatList, { paddingBottom: 140 }]}
+       />
+       
         ) : (
           <Text style={styles.noBookingsText}>No bookings yet.</Text>
         )}

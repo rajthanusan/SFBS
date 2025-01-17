@@ -25,13 +25,14 @@ const ALL_SLOTS = [
 
 export default function BookFacility({ route, navigation }) {
   const { facility, user } = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
+
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [receipt, setReceipt] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '');
 
   useEffect(() => {
     navigation.setOptions({
@@ -165,7 +166,7 @@ export default function BookFacility({ route, navigation }) {
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
         style={styles.input}
-        value={phoneNumber}
+        value={user.phoneNumber}
         onChangeText={setPhoneNumber}
         placeholder="Enter your phone number"
         keyboardType="phone-pad"

@@ -19,7 +19,7 @@ const API_URL = `${config.API_URL}/api/v1/equipment-booking`;
 
 export default function BookEquipment({ route, navigation }) {
   const { equipment, user } = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '');
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -146,7 +146,7 @@ export default function BookEquipment({ route, navigation }) {
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
         style={styles.input}
-        value={phoneNumber}
+        value={user.phoneNumber}
         onChangeText={setPhoneNumber}
         placeholder="Enter your phone number"
         keyboardType="phone-pad"

@@ -4,14 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { StatusBar } from 'react-native';
 
 import HomeScreen from './HomeScreen';
-import CoachProfileScreen from './CoachProfileScreen';
-import RequestsScreen from './RequestsScreen';
-import BookingsScreen from './BookingsScreen';
+import UserScreen from './UserManagementScreen';
 import FacilitiesScreen from './FacilitiesScreen';
-import EquipmentScreen from './EquipmentsScreen';
+import EquipmentsScreen from './EquipmentsScreen';
+import CoachesScreen from './CoachesScreen';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,6 +30,8 @@ function MainTabs({ navigation, setUser, user }) {
     try {
       await AsyncStorage.removeItem('userToken');
       setUser(null);
+      
+      
     } catch (error) {
       console.error('Error logging out:', error);
       Alert.alert('Logout Error', 'An error occurred while logging out. Please try again.');
@@ -44,26 +46,20 @@ function MainTabs({ navigation, setUser, user }) {
             let iconName;
 
             switch (route.name) {
-
               case 'Home':
                 iconName = focused ? 'home' : 'home-outline';
                 break;
-
-            
-              case 'Profile':
-                iconName = focused ? 'person' : 'person-outline';
-                break;
-              case 'Requests':
-                iconName = focused ? 'mail' : 'mail-outline';
-                break;
-              case 'Bookings':
-                iconName = focused ? 'calendar' : 'calendar-outline';
-                break;
-              case 'FacilitiesCoach':
+              case 'Facilities':
                 iconName = focused ? 'business' : 'business-outline';
                 break;
-              case 'EquipmentsCoach':
+              case 'Equipment':
                 iconName = focused ? 'basketball' : 'basketball-outline';
+                break;
+              case 'Coaches':
+                iconName = focused ? 'people' : 'people-outline';
+                break;
+              case 'Users':
+                iconName = focused ? 'person' : 'person-outline';
                 break;
               case 'Logout':
                 iconName = 'log-out-outline';
@@ -76,7 +72,7 @@ function MainTabs({ navigation, setUser, user }) {
           },
           tabBarActiveTintColor: '#008080',
           tabBarInactiveTintColor: 'gray',
-          headerShown: true,
+          headerShown: false,
           tabBarStyle: {
             paddingBottom: 5,
             paddingTop: 5,
@@ -89,66 +85,43 @@ function MainTabs({ navigation, setUser, user }) {
             fontSize: 12,
             fontWeight: '500',
           },
-          headerStyle: {
-            backgroundColor: '#008080',
-            height: 70,
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 24,
-          },
         })}
       >
-       
-       
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Home' }}
+        />
+         <Tab.Screen
+          name="Users"
+          options={{ title: 'Users' }}
+        >
+          {(props) => <UserScreen {...props} user={user} />}
+        </Tab.Screen>
+        <Tab.Screen
+  name="Coaches"
+  options={{ title: 'Coaches' }}
+>
+  {(props) => <CoachesScreen {...props} user={user} />}
+</Tab.Screen>
        <Tab.Screen
-  name="Home"
-  component={HomeScreen}
-  options={{
-    headerStyle: undefined, 
-    headerTintColor: undefined, 
-    headerTitleStyle: undefined,
-    headerShown: false,
-  }}
-/>
+  name="Facilities"
+  options={{ title: 'Facilities' }}
+>
+  {(props) => <FacilitiesScreen {...props} user={user} />}
+</Tab.Screen>
 
-        <Tab.Screen 
-          name="Profile" 
-          options={{ title: 'Profile' }}
-        >
-          {(props) => <CoachProfileScreen {...props} user={user} />}
-        </Tab.Screen>
-        <Tab.Screen 
-          name="Requests" 
-          options={{ title: 'Requests' }}
-        >
-          {(props) => <RequestsScreen {...props} user={user} />}
-        </Tab.Screen>
+<Tab.Screen
+  name="Equipment"
+  options={{ title: 'Equipment' }}
+>
+  {(props) => <EquipmentsScreen {...props} user={user} />}
+</Tab.Screen>
 
-        <Tab.Screen 
-          name="Bookings" 
-          options={{ title: 'Bookings' }}
-        >
-          {(props) => <BookingsScreen {...props} user={user} />}
-        </Tab.Screen>
-
-        <Tab.Screen 
-          name="FacilitiesCoach" 
-          options={{ title: 'Facilities' }}
-        >
-          {(props) => <FacilitiesScreen {...props} user={user} />}
-        </Tab.Screen>
-
-        <Tab.Screen 
-          name="EquipmentsCoach" 
-          options={{ title: 'Equipment' }}
-        >
-          {(props) => <EquipmentScreen {...props} user={user} />}
-        </Tab.Screen>
 
        
       
+       
         <Tab.Screen
           name="Logout"
           component={View}
@@ -163,7 +136,7 @@ function MainTabs({ navigation, setUser, user }) {
   );
 }
 
-export default function CoachNavigation({ navigation, setUser, user }) {
+export default function UserNavigation({ navigation, setUser, user }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -195,4 +168,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-

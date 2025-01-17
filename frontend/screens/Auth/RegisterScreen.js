@@ -43,10 +43,11 @@ const RegisterScreen = ({ navigation, setUser }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("User");
 
   const handleRegister = async () => {
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !phoneNumber) {
       Alert.alert("Validation Error", "Please fill in all fields.");
       return;
     }
@@ -58,6 +59,7 @@ const RegisterScreen = ({ navigation, setUser }) => {
           name: `${firstName} ${lastName}`,
           email,
           password,
+          phoneNumber,
           role,
         }
       );
@@ -130,6 +132,23 @@ const RegisterScreen = ({ navigation, setUser }) => {
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Ionicons
+          name="call-outline"
+          size={24}
+          color="#008080"
+          style={styles.icon}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number"
+          placeholderTextColor="#666"
+          keyboardType="phone-pad"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
         />
       </View>
 

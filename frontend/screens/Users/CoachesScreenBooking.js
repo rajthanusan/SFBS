@@ -20,7 +20,7 @@ const API_URL = `${config.API_URL}/api/v1/session/request`;
 
 function CoachesScreenBooking({ route, navigation }) {
   const { coach, user, availableTimeSlots, offerSessions } = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '');
   const [sessionType, setSessionType] = useState('');
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -121,7 +121,7 @@ function CoachesScreenBooking({ route, navigation }) {
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
         style={styles.input}
-        value={phoneNumber}
+        value={user.phoneNumber}
         onChangeText={setPhoneNumber}
         placeholder="Enter your phone number"
         keyboardType="phone-pad"

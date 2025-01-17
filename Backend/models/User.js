@@ -29,10 +29,13 @@ const UserSchema = new mongoose.Schema({
     type: String, // Store Google ID for OAuth users
     default: null,
   },
+  phoneNumber: {
+    type: String,
+    required: false,},
   
   role: {
     type: String,
-    enum: ['User', 'Coach', 'Admin'],
+    enum: ['User', 'Coach', 'Admin', 'Guard'],
     default: 'User',
   },
   createdAt: {

@@ -104,15 +104,16 @@ export default function BookingsScreen({ navigation, user }) {
   return (
     <View style={styles.container}>
     
-      
+    <View style={styles.filterContainer}> 
       <SelectList
         setSelected={setSelectedSessionType}
         data={sessionTypes}
         defaultOption={{ key: 'all', value: 'All' }}
-        boxStyles={styles.dropdown}
+        boxStyles={styles.filterBox}
+        dropdownStyles={styles.filterDropdown}
         placeholder="Filter by Session Type"
       />
-
+</View>
       <FlatList
         data={filteredBookings}
         keyExtractor={(item) => item._id.toString()}
@@ -129,6 +130,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f8f8f8',
+  },
+  filterContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  filterLabel: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  filterBox: {
+    borderColor: '#20B2AA',
+  },
+  filterDropdown: {
+    borderColor: '#20B2AA',
   },
   title: {
     fontSize: 24,

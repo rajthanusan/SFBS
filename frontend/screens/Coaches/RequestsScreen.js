@@ -31,6 +31,7 @@ const RequestsScreen = ({ user }) => {
   const [availableFacilities, setAvailableFacilities] = useState([]);
   const [isConnected, setIsConnected] = useState(true);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false); 
+  const [statusFilter, setStatusFilter] = useState('All'); 
 
   const courtOptions = [
     { key: '01', value: '01' },
@@ -38,6 +39,13 @@ const RequestsScreen = ({ user }) => {
     { key: '03', value: '03' },
     { key: '04', value: '04' },
     { key: '05', value: '05' },
+  ];
+
+  const statusOptions = [
+    { key: 'All', value: 'All' },
+    { key: 'Pending', value: 'Pending' },
+    { key: 'Accepted', value: 'Accepted' },
+    { key: 'Rejected', value: 'Rejected' },
   ];
 
   const fetchRequests = useCallback(async () => {
@@ -402,8 +410,20 @@ const RequestsScreen = ({ user }) => {
           <Text style={styles.offlineText}>No internet connection</Text>
         </View>
       )}
+      <View style={styles.filterContainer}> {/* Added filter container */}
+       
+        <SelectList 
+          setSelected={(val) => setStatusFilter(val)}
+          data={statusOptions}
+          save="value"
+          defaultOption={{ key: 'All', value: 'All' }}
+          boxStyles={styles.filterBox}
+          dropdownStyles={styles.filterDropdown}
+          label={<Text>Select Status</Text>}
+        />
+      </View> {/* End of filter container */}
       <FlatList
-        data={requests}
+        data={requests.filter(request => statusFilter === 'All' || request.status === statusFilter)}
         renderItem={renderRequestItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.requestList}
@@ -498,35 +518,33 @@ const RequestsScreen = ({ user }) => {
             </View>
 
             <TouchableOpacity style={styles.uploadButton} onPress={handleReceiptUpload}>
-  <Text style={styles.uploadButtonText}>Upload Receipt</Text>
+              <Text style={styles.uploadButtonText}>Upload Receipt</Text>
+            </TouchableOpacity>
+
+            {receiptFile ? (
+              <View style={styles.receiptContainer}>
+                <Text style={styles.fileUploaded}>Receipt uploaded:</Text>
+                <Image source={{ uri: receiptFile }} style={styles.receiptImage} />
+              </View>
+            ) : (
+              <Text style={styles.fileUploaded}>No receipt uploaded</Text>
+            )}
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                style={[styles.button, styles.confirmButton]}
+                onPress={bookingConfirmed ? handleAcceptRequest : handleConfirmBooking}
+              >
+                <Text style={styles.buttonText}>
+                  {bookingConfirmed ? 'Send Request' : 'Confirm Booking'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => setIsCourtSelectionModalOpen(false)}>
+  <Text style={styles.buttonText}>Cancel</Text>
 </TouchableOpacity>
 
-{receiptFile ? (
-  <View style={styles.receiptContainer}>
-    <Text style={styles.fileUploaded}>Receipt uploaded:</Text>
-    <Image source={{ uri: receiptFile }} style={styles.receiptImage} />
-  </View>
-) : (
-  <Text style={styles.fileUploaded}>No receipt uploaded</Text>
-)}
-
-<View style={styles.buttonContainer}>
-<TouchableOpacity 
-  style={[styles.button, styles.confirmButton]}
-  onPress={bookingConfirmed ? handleAcceptRequest : handleConfirmBooking}
->
-  <Text style={styles.buttonText}>
-    {bookingConfirmed ? 'Send Request' : 'Confirm Booking'}
-  </Text>
-</TouchableOpacity>
-
-  <TouchableOpacity
-    style={[styles.button, styles.cancelButton]}
-    onPress={() => setIsCourtSelectionModalOpen(false)}
-  >
-    <Text style={styles.buttonText}>Cancel</Text>
-  </TouchableOpacity>
-</View>
+            </View>
 
           </ScrollView>
         </View>
@@ -538,7 +556,7 @@ const RequestsScreen = ({ user }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f8f8',
   },
   offlineBar: {
     backgroundColor: '#ff0000',
@@ -716,7 +734,22 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: '#d9534f',
     marginLeft: 10,
-  }
+  },
+  filterContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  filterLabel: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  filterBox: {
+    borderColor: '#20B2AA',
+  },
+  filterDropdown: {
+    borderColor: '#20B2AA',
+  },
 });
 
 export default RequestsScreen;

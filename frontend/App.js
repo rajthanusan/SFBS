@@ -8,6 +8,7 @@ import RegisterScreen from './screens/Auth/RegisterScreen';
 import UserNavigation from './screens/Users/UserPage';
 import CoachNavigation from './screens/Coaches/CoachesPage';
 import GuardPage from './screens/Guard/GuardHomePage';
+import AdminPage from './screens/Admin/AdminPage';
 import FacilitiesScreen from './screens/Users/FacilitiesScreen';
 import BookFacility from './screens/Users/BookFacility';
 import EquipmentsScreen from './screens/Users/EquipmentsScreen';
@@ -21,7 +22,7 @@ import CoachesScreenBooking from './screens/Users/CoachesScreenBooking';
 import CoachProfileScreen from './screens/Users/CoachProfileScreen';
 import MyBookingsScreen from './screens/Users/MyBookingsScreen';
 import MyBookingBook from './screens/Users/MyBookingBook';
-import CourtBooking from './screens/Coaches/CourtBooking';
+
 
 
 const Stack = createStackNavigator();
@@ -80,6 +81,8 @@ export default function App() {
                       return <CoachNavigation {...props} setUser={setUser} user={user} />;
                     case 'Guard':
                       return <GuardPage {...props} setUser={setUser} user={user} />;
+                    case 'Admin':
+                      return <AdminPage {...props} setUser={setUser} user={user} />;
                     default:
                       return <LoginScreen {...props} setUser={setUser} />;
                   }
@@ -126,7 +129,7 @@ export default function App() {
               <Stack.Screen name="MyBookingBook">
                 {(props) => <MyBookingBook {...props} user={user} />}
               </Stack.Screen>
-              <Stack.Screen name="CourtBooking" component={CourtBooking} />
+             
             </>
           )}
         </Stack.Navigator>

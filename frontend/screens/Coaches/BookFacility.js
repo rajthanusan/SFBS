@@ -1,330 +1,405 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Image,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';  
+import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 import config from '../../config';
-import { Ionicons } from '@expo/vector-icons';
 
-const API_URL = `${config.API_URL}/api/v1/facility-booking`;
-
-const ALL_SLOTS = [
-  "08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00",
-  "12:00 - 13:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00",
-  "16:00 - 17:00", "17:00 - 18:00", 
-];
-
-export default function BookFacility({ route, navigation }) {
-  const { facility, user } = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [date, setDate] = useState(new Date());
+const CoachProfileForm = () => {
+  const [profile, setProfile] = useState({
+    coachName: '',
+    coachLevel: '',
+    coachingSport: '',
+    coachPrice: {
+      individualSessionPrice: '',
+      groupSessionPrice: '',
+    },
+    availableTimeSlots: [],
+    experience: '',
+    offerSessions: [],
+    sessionDescription: '',
+    image: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [isNewCoach, setIsNewCoach] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
-  const [receipt, setReceipt] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const coachLevels = ['Professional Level', 'Intermediate Level', 'Beginner Level'];
+  const timeSlots = [
+    "08:00 AM - 09:00 AM",
+    "09:00 AM - 10:00 AM",
+    "10:00 AM - 11:00 AM",
+    "11:00 AM - 12:00 PM",
+    "12:00 PM - 01:00 PM",
+    "01:00 PM - 02:00 PM",
+    "02:00 PM - 03:00 PM",
+    "03:00 PM - 04:00 PM",
+    "04:00 PM - 05:00 PM",
+    "05:00 PM - 06:00 PM"
+  ];
 
   useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={30} color="#008080" />
-      </TouchableOpacity> 
-      
-      ),
-    });
-  }, [navigation]);
+    fetchCoachProfile();
+  }, []);
 
-  useEffect(() => {
-    const newTotalPrice = selectedTimeSlots.length * facility.courtPrice;
-    setTotalPrice(newTotalPrice);
-  }, [selectedTimeSlots, facility.courtPrice]);
+  const fetchCoachProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const userId = await AsyncStorage.getItem('userId');
+      if (!token || !userId) {
+        setIsNewCoach(true);
+        setLoading(false);
+        return;
+      }
 
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDatePicker(false);
-    setDate(currentDate);
-    setSelectedTimeSlots([]);
-  };
+      const response = await axios.get(`${config.API_URL}/api/v1/coach-profile/coach/${userId}`, {
+        headers: { 'x-auth-token': token }
+      });
 
-  const toggleTimeSlot = (slot) => {
-    setSelectedTimeSlots(prevSlots => 
-      prevSlots.includes(slot)
-        ? prevSlots.filter(s => s !== slot)
-        : [...prevSlots, slot]
-    );
-  };
-
-  const pickImage = async () => {
-    // Request permission to access the media library
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission denied', 'Sorry, we need permission to access your media library.');
-      return;
+      if (response.data) {
+        setProfile(response.data);
+        setIsNewCoach(false);
+      } else {
+        setIsNewCoach(true);
+      }
+    } catch (error) {
+      console.error('Error fetching coach profile:', error);
+      setIsNewCoach(true);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Launch the image picker
+  const handleInputChange = (name, value) => {
+    setProfile(prevProfile => ({
+      ...prevProfile,
+      [name]: value
+    }));
+  };
+
+  const handlePriceChange = (type, value) => {
+    setProfile(prevProfile => ({
+      ...prevProfile,
+      coachPrice: {
+        ...prevProfile.coachPrice,
+        [type]: value
+      }
+    }));
+  };
+
+  const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaType: ImagePicker.MediaTypeOptions.Photo,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setReceipt(result.assets[0]);
+    if (!result.canceled) {
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        image: result.assets[0].uri
+      }));
     }
   };
 
-  const handleBooking = async () => {
-    if (!phoneNumber || selectedTimeSlots.length === 0 || !receipt) {
-      Alert.alert('Error', 'Please fill in all fields and upload a receipt');
-      return;
+  const handleAddTimeSlot = () => {
+    setShowDatePicker(true);
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setSelectedDate(selectedDate);
     }
+  };
 
-    setIsLoading(true);
+  const handleTimeSlotSelect = (timeSlot) => {
+    const newTimeSlot = {
+      date: selectedDate.toISOString().split('T')[0],
+      timeSlot: timeSlot,
+    };
+    setProfile(prevProfile => ({
+      ...prevProfile,
+      availableTimeSlots: [...prevProfile.availableTimeSlots, newTimeSlot]
+    }));
+  };
 
+  const handleDeleteTimeSlot = (index) => {
+    setProfile(prevProfile => ({
+      ...prevProfile,
+      availableTimeSlots: prevProfile.availableTimeSlots.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmit = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
-        throw new Error('No authentication token found');
+        Alert.alert('Error', 'No authentication token found');
+        return;
       }
 
-      const formData = new FormData();
-      formData.append('userName', user.name);
-      formData.append('userEmail', user.email);
-      formData.append('userPhoneNumber', phoneNumber);
-      formData.append('sportName', facility.sportName);
-      formData.append('courtNumber', facility.courtNumber);
-      formData.append('courtPrice', facility.courtPrice.toString());
-      formData.append('date', date.toISOString().split('T')[0]);
-      formData.append('timeSlots', JSON.stringify(selectedTimeSlots));
-      formData.append('totalPrice', totalPrice.toString());
-      formData.append('receipt', {
-        uri: receipt.uri,
-        type: receipt.type,
-        name: receipt.fileName,
-      });
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'x-auth-token': token,
+      const data = {
+        ...profile,
+        coachPrice: {
+          individualSessionPrice: parseFloat(profile.coachPrice.individualSessionPrice),
+          groupSessionPrice: parseFloat(profile.coachPrice.groupSessionPrice),
         },
-        body: formData,
-      });
+      };
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.msg || 'An error occurred while booking');
+      let response;
+      if (isNewCoach) {
+        response = await axios.post(`${config.API_URL}/api/v1/coach-profile`, data, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+        });
+      } else {
+        response = await axios.put(`${config.API_URL}/api/v1/coach-profile/${profile._id}`, data, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+        });
       }
 
-      Alert.alert('Success', 'Booking created successfully');
-      navigation.goBack();
+      if (profile.image) {
+        const formData = new FormData();
+        formData.append('image', {
+          uri: profile.image,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        });
+
+        await axios.put(
+          `${config.API_URL}/api/v1/coach-profile/update-image/${response.data._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'x-auth-token': token,
+            },
+          }
+        );
+      }
+
+      Alert.alert('Success', `Coach profile ${isNewCoach ? 'created' : 'updated'} successfully`);
+      setIsNewCoach(false);
+      setProfile(response.data);
     } catch (error) {
-      console.error('Error creating booking:', error);
-      Alert.alert('Error', error.message);
-    } finally {
-      setIsLoading(false);
+      console.error('Error submitting coach profile:', error);
+      Alert.alert('Error', `Failed to ${isNewCoach ? 'create' : 'update'} coach profile`);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-  <Ionicons name="arrow-back" size={30} color="#008080" />
-  <Text style={styles.title}>Book Facility</Text>
-</TouchableOpacity> 
+      <Text style={styles.title}>{isNewCoach ? 'Create Coach Profile' : 'Update Coach Profile'}</Text>
 
-    
-      <Text style={styles.facilityName}>{facility.sportName} - Court {facility.courtNumber}</Text>
-      
-      <Text style={styles.label}>Name</Text>
-      <TextInput
-        style={styles.input}
-        value={user.name}
-        editable={false}
-      />
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        value={user.email}
-        editable={false}
-      />
-
-      <Text style={styles.label}>Phone Number</Text>
-      <TextInput
-        style={styles.input}
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        placeholder="Enter your phone number"
-        keyboardType="phone-pad"
-      />
-
-      <Text style={styles.label}>Date</Text>
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-        <Text>{date.toDateString()}</Text>
+      <TouchableOpacity onPress={handleImagePick} style={styles.imageContainer}>
+        {profile.image ? (
+          <Image source={{ uri: profile.image }} style={styles.image} />
+        ) : (
+          <Text style={styles.imagePlaceholder}>Select Image</Text>
+        )}
       </TouchableOpacity>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Coach Name"
+        value={profile.coachName}
+        onChangeText={(text) => handleInputChange('coachName', text)}
+      />
+
+      <Picker
+        selectedValue={profile.coachLevel}
+        onValueChange={(itemValue) => handleInputChange('coachLevel', itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Coach Level" value="" />
+        {coachLevels.map((level, index) => (
+          <Picker.Item key={index} label={level} value={level} />
+        ))}
+      </Picker>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Coaching Sport"
+        value={profile.coachingSport}
+        onChangeText={(text) => handleInputChange('coachingSport', text)}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Individual Session Price"
+        value={profile.coachPrice.individualSessionPrice}
+        onChangeText={(text) => handlePriceChange('individualSessionPrice', text)}
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Group Session Price"
+        value={profile.coachPrice.groupSessionPrice}
+        onChangeText={(text) => handlePriceChange('groupSessionPrice', text)}
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Experience"
+        value={profile.experience}
+        onChangeText={(text) => handleInputChange('experience', text)}
+        multiline
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Session Description"
+        value={profile.sessionDescription}
+        onChangeText={(text) => handleInputChange('sessionDescription', text)}
+        multiline
+      />
+
+      <Text style={styles.sectionTitle}>Available Time Slots</Text>
+      {profile.availableTimeSlots.map((slot, index) => (
+        <View key={index} style={styles.timeSlotContainer}>
+          <Text>{`${slot.date}, ${slot.timeSlot}`}</Text>
+          <TouchableOpacity onPress={() => handleDeleteTimeSlot(index)}>
+            <Text style={styles.deleteText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      <TouchableOpacity style={styles.addButton} onPress={handleAddTimeSlot}>
+        <Text style={styles.addButtonText}>Add Time Slot</Text>
+      </TouchableOpacity>
+
       {showDatePicker && (
         <DateTimePicker
-          value={date}
+          value={selectedDate}
           mode="date"
           display="default"
           onChange={handleDateChange}
           minimumDate={new Date()}
+          maximumDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
         />
       )}
 
-      <Text style={styles.label}>Time Slots</Text>
-      <View style={styles.timeSlotsContainer}>
-        {ALL_SLOTS.map((slot) => (
-          <TouchableOpacity
-            key={slot}
-            style={[styles.timeSlot, selectedTimeSlots.includes(slot) && styles.selectedTimeSlot]}
-            onPress={() => toggleTimeSlot(slot)}
-          >
-            <Text style={selectedTimeSlots.includes(slot) ? styles.selectedTimeSlotText : styles.timeSlotText}>
-              {slot}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <Text style={styles.label}>Total Price</Text>
-      <Text style={styles.priceText}>Rs. {totalPrice}</Text>
-
-      <Text style={styles.label}>Upload Receipt</Text>
-      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-        <Text style={styles.uploadButtonText}>
-          {receipt ? 'Change Receipt' : 'Select Receipt'}
-        </Text>
-      </TouchableOpacity>
-      {receipt && (
-        <Image source={{ uri: receipt.uri }} style={styles.receiptImage} />
+      {showDatePicker && (
+        <Picker
+          selectedValue=""
+          onValueChange={handleTimeSlotSelect}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select Time Slot" value="" />
+          {timeSlots.map((slot, index) => (
+            <Picker.Item key={index} label={slot} value={slot} />
+          ))}
+        </Picker>
       )}
 
-      <TouchableOpacity
-        style={styles.bookButton}
-        onPress={handleBooking}
-        disabled={isLoading}
-      >
-        <Text style={styles.bookButtonText}>
-          {isLoading ? 'Booking...' : 'Book Now'}
-        </Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>{isNewCoach ? 'Create Profile' : 'Update Profile'}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa',
+    padding: 16,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#008080',
+    marginBottom: 16,
   },
-  facilityName: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: '#333',
+  imageContainer: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderRadius: 8,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#008080',
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  imagePlaceholder: {
+    color: '#999',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
+    borderColor: '#ccc',
+    borderRadius: 8,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 16,
     fontSize: 16,
   },
-  dateButton: {
+  picker: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 16,
   },
-  timeSlotsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 15,
-  },
-  timeSlot: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    margin: 5,
-  },
-  selectedTimeSlot: {
-    backgroundColor: '#008080',
-  },
-  timeSlotText: {
-    color: '#333',
-  },
-  selectedTimeSlotText: {
-    color: '#fff',
-  },
-  priceText: {
+  sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#008080',
-    marginBottom: 15,
+    marginTop: 16,
+    marginBottom: 8,
   },
-  uploadButton: {
-    backgroundColor: '#008080',
-    padding: 15,
-    borderRadius: 5,
+  timeSlotContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 8,
   },
-  uploadButtonText: {
+  deleteText: {
+    color: 'red',
+  },
+  addButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  addButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
   },
-  receiptImage: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-    marginBottom: 15,
-  },
-  bookButton: {
-    backgroundColor: '#008080',
-    padding: 15,
-    borderRadius: 5,
+  submitButton: {
+    backgroundColor: '#2196F3',
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 16,
   },
-  bookButtonText: {
+  submitButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  backButton: {
-    marginLeft: 10,
-  },
-  backButton: {
-    borderRadius: 5,  
-    flexDirection: 'row',
   },
 });
+
+export default CoachProfileForm;
+

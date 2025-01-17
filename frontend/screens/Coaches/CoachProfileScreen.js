@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Image, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,11 +8,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { SelectList } from 'react-native-dropdown-select-list';
 
 export default function CoachProfileScreen({ user }) {
-  const [coachProfile, setCoachProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [coachId, setCoachId] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     coachName: '',
     coachLevel: '',
@@ -24,10 +19,13 @@ export default function CoachProfileScreen({ user }) {
     sessionDescription: '',
     availableTimeSlots: [],
   });
+
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
   const timeSlotOptions = [
     { key: '1', value: '08:00 AM - 09:00 AM' },
@@ -43,12 +41,10 @@ export default function CoachProfileScreen({ user }) {
   ];
 
   useEffect(() => {
-    const fetchCoachId = async () => {
-      if (!user || !user.id) {
-        setLoading(false);
-        return;
-      }
+    const checkCoachProfile = async () => {
+      if (!user || !user.id) return;
 
+      setLoading(true);
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (!token) {
@@ -62,81 +58,41 @@ export default function CoachProfileScreen({ user }) {
           },
         });
 
-        setCoachId(response.data._id);
-      } catch (error) {
-        console.error('Error fetching coach ID:', error);
-        setError(error.response?.data?.message || error.message);
-        if (error.response?.status === 401) {
-          Alert.alert('Authentication Error', 'Please log in again.');
+        if (response.data) {
+          setFormData({
+            coachName: response.data.coachName,
+            coachLevel: response.data.coachLevel,
+            coachingSport: response.data.coachingSport,
+            individualSessionPrice: response.data.coachPrice.individualSessionPrice.toString(),
+            groupSessionPrice: response.data.coachPrice.groupSessionPrice.toString(),
+            experience: response.data.experience,
+            offerSessions: response.data.offerSessions.join(', '),
+            sessionDescription: response.data.sessionDescription,
+            availableTimeSlots: response.data.availableTimeSlots || [],
+          });
+          setImage(response.data.image);
         }
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCoachId();
+    checkCoachProfile();
   }, [user]);
 
-  useEffect(() => {
-    const fetchCoachProfile = async () => {
-      if (!coachId) return;
-
-      setLoading(true);
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
-
-        const response = await axios.get(`${config.API_URL}/api/v1/coach-profile/${coachId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token,
-          },
-        });
-
-        setCoachProfile(response.data);
-        setFormData({
-          coachName: response.data.coachName,
-          coachLevel: response.data.coachLevel,
-          coachingSport: response.data.coachingSport,
-          individualSessionPrice: response.data.coachPrice.individualSessionPrice.toString(),
-          groupSessionPrice: response.data.coachPrice.groupSessionPrice.toString(),
-          experience: response.data.experience,
-          offerSessions: response.data.offerSessions.join(', '),
-          sessionDescription: response.data.sessionDescription,
-          availableTimeSlots: response.data.availableTimeSlots || [],
-        });
-        setImage(response.data.image);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching coach profile:', error);
-        setError(error.response?.data?.message || error.message);
-        if (error.response?.status === 401) {
-          Alert.alert('Authentication Error', 'Please log in again.');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (coachId) {
-      fetchCoachProfile();
-    }
-  }, [coachId]);
-
   const handleInputChange = (name, value) => {
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleImagePick = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
@@ -145,71 +101,19 @@ export default function CoachProfileScreen({ user }) {
     }
   };
 
-  const isValidDate = (date) => {
-    const selectedDate = new Date(date);
-    const currentDate = new Date();
-    const sevenDaysLater = new Date(currentDate.setDate(currentDate.getDate() + 7));
-
-    return selectedDate >= new Date() && selectedDate <= sevenDaysLater;
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const token = await AsyncStorage.getItem('userToken');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const invalidSlots = formData.availableTimeSlots.filter((slot) => !isValidDate(slot.date));
-      if (invalidSlots.length > 0) {
-        Alert.alert('Invalid Time Slots', 'All time slots must be within the next 7 days.');
-        return;
-      }
-
-      const data = {
-        ...formData,
-        coachPrice: {
-          individualSessionPrice: parseFloat(formData.individualSessionPrice),
-          groupSessionPrice: parseFloat(formData.groupSessionPrice),
-        },
-        offerSessions: formData.offerSessions.split(',').map((s) => s.trim()),
-        image: image,
-      };
-
-      let response;
-      if (coachProfile) {
-        response = await axios.put(`${config.API_URL}/api/v1/coach-profile/${coachId}`, data, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token,
-          },
-        });
-      } else {
-        response = await axios.post(`${config.API_URL}/api/v1/coach-profile`, data, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token,
-          },
-        });
-      }
-
-      setCoachProfile(response.data);
-      setIsEditing(false);
-      Alert.alert('Success', 'Coach profile updated successfully');
-    } catch (error) {
-      console.error('Error updating coach profile:', error);
-      if (error.response) {
-        Alert.alert('Error', `Failed to update coach profile: ${error.response.data.message || 'Unknown error'}`);
-      } else if (error.request) {
-        Alert.alert('Error', 'No response received from server. Please check your internet connection.');
-      } else {
-        Alert.alert('Error', `An unexpected error occurred: ${error.message}`);
-      }
-    }
-  };
-
   const handleAddTimeSlot = () => {
-    setShowDatePicker(true);
+    if (selectedDate && selectedTimeSlot) {
+      const newSlot = { date: selectedDate.toLocaleDateString(), timeSlot: selectedTimeSlot };
+      setFormData((prevState) => ({
+        ...prevState,
+        availableTimeSlots: [...prevState.availableTimeSlots, newSlot],
+      }));
+      setSelectedDate(new Date());
+      setSelectedTimeSlot(null);
+      setShowDatePicker(false);
+    } else {
+      Alert.alert('Error', 'Please select both date and time slot');
+    }
   };
 
   const handleDeleteTimeSlot = (index) => {
@@ -227,50 +131,66 @@ export default function CoachProfileScreen({ user }) {
     }
   };
 
-  const onTimeSlotSelect = (selectedItem) => {
-    setSelectedTimeSlot(selectedItem);
-    if (selectedDate && selectedItem) {
-      const newTimeSlot = {
-        date: selectedDate.toISOString().split('T')[0],
-        timeSlot: selectedItem,
-      };
-      setFormData((prevState) => ({
-        ...prevState,
-        availableTimeSlots: [...prevState.availableTimeSlots, newTimeSlot],
-      }));
-      setSelectedDate(new Date());
-      setSelectedTimeSlot('');
-    }
+  const onTimeSlotSelect = (value) => {
+    setSelectedTimeSlot(value);
   };
 
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading user data...</Text>
-      </View>
-    );
-  }
+  const handleSubmit = async () => {
+    if (!formData.coachName || !formData.coachLevel || !formData.coachingSport) {
+      Alert.alert('Error', 'Please fill in all the required fields.');
+      return;
+    }
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#008080" />
-      </View>
-    );
-  }
+    setLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
 
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
+      const data = {
+        ...formData,
+        coachPrice: {
+          individualSessionPrice: parseFloat(formData.individualSessionPrice),
+          groupSessionPrice: parseFloat(formData.groupSessionPrice),
+        },
+        offerSessions: formData.offerSessions.split(',').map((s) => s.trim()),
+        image: image,
+      };
+
+      const response = await axios.post(`${config.API_URL}/api/v1/coach-profile`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+      });
+
+      Alert.alert('Success', 'Coach profile created successfully');
+      setFormData({
+        coachName: '',
+        coachLevel: '',
+        coachingSport: '',
+        individualSessionPrice: '',
+        groupSessionPrice: '',
+        experience: '',
+        offerSessions: '',
+        sessionDescription: '',
+        availableTimeSlots: [],
+      });
+      setImage(null);
+    } catch (err) {
+      console.error('Error creating coach profile:', err);
+      setError(err.message);
+      Alert.alert('Error', 'Failed to create coach profile');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>{coachProfile ? 'Update Profile' : 'Create Profile'}</Text>
+        <Text style={styles.title}>Create Coach Profile</Text>
 
         <TouchableOpacity onPress={handleImagePick}>
           {image ? (
@@ -344,7 +264,8 @@ export default function CoachProfileScreen({ user }) {
             </TouchableOpacity>
           </View>
         ))}
-        <TouchableOpacity style={styles.addButton} onPress={handleAddTimeSlot}>
+
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowDatePicker(true)}>
           <Text style={styles.addButtonText}>+ Add Time Slot</Text>
         </TouchableOpacity>
 
@@ -368,9 +289,15 @@ export default function CoachProfileScreen({ user }) {
           dropdownStyles={styles.dropdown}
         />
 
+        <TouchableOpacity style={styles.saveButton} onPress={handleAddTimeSlot}>
+          <Text style={styles.saveButtonText}>Save Time Slot</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
           <Text style={styles.saveButtonText}>Save Profile</Text>
         </TouchableOpacity>
+
+        {loading && <ActivityIndicator size="large" color="#008080" />}
       </View>
     </ScrollView>
   );
@@ -379,118 +306,91 @@ export default function CoachProfileScreen({ user }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
   },
   formContainer: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 5,
+    marginTop: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    marginBottom: 16,
-    borderRadius: 8,
-  },
-  imagePlaceholder: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  imagePlaceholderText: {
-    color: '#999',
-    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    borderRadius: 4,
+    padding: 12,
+    marginBottom: 12,
+  },
+  image: {
+    width: 100,
+    height: 100,
     borderRadius: 8,
     marginBottom: 12,
-    fontSize: 16,
+  },
+  imagePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagePlaceholderText: {
+    color: '#aaa',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 16,
-    marginBottom: 8,
+    marginVertical: 16,
   },
   timeSlotContainer: {
-    marginBottom: 12,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   timeSlotText: {
     fontSize: 16,
-    marginBottom: 8,
   },
   deleteText: {
     color: 'red',
-    textAlign: 'right',
     fontSize: 14,
   },
   addButton: {
     backgroundColor: '#008080',
     padding: 12,
     borderRadius: 8,
+    marginVertical: 16,
     alignItems: 'center',
-    marginBottom: 16,
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  selectBox: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 16,
+  },
+  dropdown: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
   },
   saveButton: {
     backgroundColor: '#008080',
     padding: 12,
     borderRadius: 8,
+    marginVertical: 16,
     alignItems: 'center',
-    marginTop: 16,
   },
   saveButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
-  },
-  loadingText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  selectBox: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginTop: 4,
   },
 });
-
