@@ -4,14 +4,13 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const Joi = require('joi');
 const sendUserRegistrationEmail = require('../utils/userEmailService');
-
 dotenv.config();
-
 const registerSchema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
-  role: Joi.string().valid('User', 'Coach', 'Admin').required(),
+  role: Joi.string().valid('User', 'Coach').required(),
+  phoneNumber: Joi.string().pattern(/^\d{10,15}$/).optional(), 
 });
 
 exports.register = async (req, res) => {
@@ -20,7 +19,7 @@ exports.register = async (req, res) => {
     return res.status(400).json({ msg: error.details[0].message });
   }
 
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, phoneNumber } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -34,6 +33,8 @@ exports.register = async (req, res) => {
       email,
       password,
       role,
+      phoneNumber: phoneNumber || null, 
+      googleId: null,
     });
 
     await user.save();
@@ -52,7 +53,7 @@ exports.register = async (req, res) => {
       if (err) throw err;
 
       // Send registration confirmation email
-      await sendUserRegistrationEmail(email, name);
+      await sendUserRegistrationEmail(email, name, role);
 
       res.json({ token });
     });
@@ -61,6 +62,8 @@ exports.register = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+
 
 
 /**
@@ -115,6 +118,7 @@ exports.login = async (req, res) => {
       role: user.role,
       email: user.email,
       name: user.name,
+      phoneNumber: user.phoneNumber || undefined,
       exp: Math.floor(Date.now() / 1000) + (60 * 60 * 10),
       iat: Math.floor(Date.now() / 1000),
       iss: 'sport-facility-booking-system',

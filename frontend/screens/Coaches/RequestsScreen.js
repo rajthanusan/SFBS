@@ -6,14 +6,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../config';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'react-native';
-
 import NetInfo from '@react-native-community/netinfo';
-
 
 const API_URL = `${config.API_URL}/api`;
 
 const RequestsScreen = ({ user }) => {
-  
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,8 +27,7 @@ const RequestsScreen = ({ user }) => {
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [availableFacilities, setAvailableFacilities] = useState([]);
   const [isConnected, setIsConnected] = useState(true);
-  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false); 
-  const [statusFilter, setStatusFilter] = useState('All'); 
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const courtOptions = [
     { key: '01', value: '01' },
@@ -278,10 +274,10 @@ const RequestsScreen = ({ user }) => {
       quality: 1,
     });
   
-    console.log("Picker Result: ", result); // Debug log to check the result object
+    console.log("Picker Result: ", result);
   
     if (!result.canceled && result.assets && result.assets[0].uri) {
-      setReceiptFile(result.assets[0].uri); // Accessing URI from the assets array
+      setReceiptFile(result.assets[0].uri);
     } else {
       Alert.alert('Error', 'No image selected or an error occurred.');
     }
@@ -345,7 +341,6 @@ const RequestsScreen = ({ user }) => {
       if (response.status === 201) {
         Alert.alert('Success', 'Booking confirmed successfully!');
         setBookingConfirmed(true);
-       
       }
     } catch (error) {
       console.error('Error confirming the booking:', error);
@@ -391,17 +386,13 @@ const RequestsScreen = ({ user }) => {
         setPhone('');
         setReceiptFile(null);
         setBookingConfirmed(false);
-      
         setIsCourtSelectionModalOpen(false);
-       
       }
     } catch (error) {
       console.error('Error accepting the request:', error);
       Alert.alert('Error', 'Failed to accept the request. Please try again.');
     }
   };
-  
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -410,8 +401,7 @@ const RequestsScreen = ({ user }) => {
           <Text style={styles.offlineText}>No internet connection</Text>
         </View>
       )}
-      <View style={styles.filterContainer}> {/* Added filter container */}
-       
+      <View style={styles.filterContainer}>
         <SelectList 
           setSelected={(val) => setStatusFilter(val)}
           data={statusOptions}
@@ -421,7 +411,7 @@ const RequestsScreen = ({ user }) => {
           dropdownStyles={styles.filterDropdown}
           label={<Text>Select Status</Text>}
         />
-      </View> {/* End of filter container */}
+      </View>
       <FlatList
         data={requests.filter(request => statusFilter === 'All' || request.status === statusFilter)}
         renderItem={renderRequestItem}
@@ -541,11 +531,9 @@ const RequestsScreen = ({ user }) => {
               </TouchableOpacity>
 
               <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => setIsCourtSelectionModalOpen(false)}>
-  <Text style={styles.buttonText}>Cancel</Text>
-</TouchableOpacity>
-
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
             </View>
-
           </ScrollView>
         </View>
       )}
@@ -720,10 +708,6 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: 'white',
     fontSize: 16,
-  },
-  fileUploaded: {
-    color: 'green',
-    marginBottom: 10,
   },
   confirmButton: {
     backgroundColor: '#008CBA',
