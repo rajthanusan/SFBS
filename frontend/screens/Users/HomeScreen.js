@@ -6,33 +6,34 @@ import bannerImage from '../../assets/images/sports-banner.jpg';
 const features = [
   {
     id: '1',
-    title: 'Facility Booking',
-    icon: 'fitness',
-    description: 'Reserve world-class venues',
-    screen: 'Facilities',
+    title: 'Book Facility',
+    icon: 'business',
+    description: 'Reserve facilities for events or activities',
+    screen: 'BookFacility',
   },
   {
     id: '2',
-    title: 'Expert Coaching',
-    icon: 'trophy',
-    description: 'Coaching for all levels',
-    screen: 'Coaches',
+    title: 'Rent Equipment',
+    icon: 'basketball',
+    description: 'Rent premium sports and fitness equipment',
+    screen: 'RentEquipment',
   },
   {
     id: '3',
-    title: 'Premium Equipment',
-    icon: 'barbell',
-    description: 'Access state-of-the-art gear',
-    screen: 'Equipment',
+    title: 'Book Coach',
+    icon: 'trophy',
+    description: 'Book coaching sessions with expert trainers',
+    screen: 'BookCoach',
   },
   {
     id: '4',
-    title: 'Sport Items Rental',
-    icon: 'basketball',
-    description: 'Lease premium athletic gear',
-    screen: 'Rental',
+    title: 'Manage Bookings',
+    icon: 'calendar',
+    description: 'View and manage your facility, equipment, and coach bookings',
+    screen: 'ManageBookings',
   },
 ];
+
 
 export default function HomeScreen() {
   return (

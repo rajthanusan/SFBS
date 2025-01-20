@@ -37,12 +37,12 @@ export default function BookingsScreen({ navigation, user }) {
       }
 
       setBookings(data);
-      setFilteredBookings(data); // Initialize filteredBookings with all data
+      setFilteredBookings(data); 
 
-      // Dynamically generate session types from bookings data
+      
       const sessionTypesList = [
         { key: 'all', value: 'All' },
-        ...Array.from(new Set(data.map(booking => booking.sessionType))) // Get unique session types
+        ...Array.from(new Set(data.map(booking => booking.sessionType))) 
           .map(sessionType => ({ key: sessionType, value: sessionType }))
       ];
       setSessionTypes(sessionTypesList);
@@ -62,10 +62,10 @@ export default function BookingsScreen({ navigation, user }) {
 
   useEffect(() => {
     if (selectedSessionType === 'all') {
-      setFilteredBookings(bookings); // Show all bookings
+      setFilteredBookings(bookings); 
     } else {
       const filtered = bookings.filter(booking => booking.sessionType === selectedSessionType);
-      setFilteredBookings(filtered); // Filter based on session type
+      setFilteredBookings(filtered); 
     }
   }, [selectedSessionType, bookings]);
 

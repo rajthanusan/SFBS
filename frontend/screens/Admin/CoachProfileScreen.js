@@ -32,13 +32,13 @@ function CoachProfileScreen({ route, navigation }) {
     try {
       const response = await fetch(`${API_URL}/${coach._id}`);
       const data = await response.json();
-      // Ensure reviews is always an array, even if the response data is malformed
+      
       setReviews(Array.isArray(data.reviews) ? data.reviews : []);
       setAvgRating(parseFloat(data.avgRating));
     } catch (error) {
       console.error('Error fetching reviews:', error);
       Alert.alert('Error', 'Failed to fetch reviews');
-      setReviews([]); // Fallback in case of error
+      setReviews([]); 
     } finally {
       setIsLoading(false);
     }

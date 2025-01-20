@@ -6,33 +6,34 @@ import bannerImage from '../../assets/images/sports-banner.jpg';
 const features = [
   {
     id: '1',
-    title: 'Facility Booking',
-    icon: 'fitness',
-    description: 'Reserve world-class venues',
-    screen: 'Facilities',
+    title: 'Scan QR - Booking Confirmation',
+    icon: 'qr-code',
+    description: 'Scan QR code to confirm bookings',
+    screen: 'ScanBookingConfirmation',
   },
   {
     id: '2',
-    title: 'Expert Coaching',
-    icon: 'trophy',
-    description: 'Coaching for all levels',
-    screen: 'Coaches',
+    title: 'Manage Facility Access',
+    icon: 'business',
+    description: 'Manage and monitor facility access',
+    screen: 'FacilityAccess',
   },
   {
     id: '3',
-    title: 'Premium Equipment',
-    icon: 'barbell',
-    description: 'Access state-of-the-art gear',
-    screen: 'Equipment',
+    title: 'Track Equipment Usage',
+    icon: 'basketball',
+    description: 'Track and monitor equipment usage',
+    screen: 'EquipmentTracking',
   },
   {
     id: '4',
-    title: 'Sport Items Rental',
-    icon: 'basketball',
-    description: 'Lease premium athletic gear',
-    screen: 'Rental',
+    title: 'Check-in User',
+    icon: 'person-add',
+    description: 'Manage user check-ins for events or facilities',
+    screen: 'UserCheckIn',
   },
 ];
+
 
 export default function HomeScreen() {
   return (

@@ -184,7 +184,7 @@ const CoachProfileScreen = ({ user }) => {
 
       let imageUrl = formData.coachImage;
 
-      // If there's a new image to upload
+      
       if (formData.coachImage && formData.coachImage !== imagePreview) {
         const imageFormData = new FormData();
         imageFormData.append('image', {
@@ -230,12 +230,12 @@ const CoachProfileScreen = ({ user }) => {
 
       let response;
       if (formData._id) {
-        // Update existing profile
+        
         response = await axios.put(`${config.API_URL}/api/v1/coach-profile/${formData._id}`, data, {
           headers: { 'x-auth-token': token },
         });
       } else {
-        // Create new profile
+        
         response = await axios.post(`${config.API_URL}/api/v1/coach-profile`, data, {
           headers: { 'x-auth-token': token },
         });
@@ -246,7 +246,7 @@ const CoachProfileScreen = ({ user }) => {
       setImagePreview(imageUrl);
       Alert.alert('Success', `Coach profile ${formData._id ? 'updated' : 'created'} successfully`);
       setFormModified(false);
-      fetchCoachProfile(); // Refresh the profile data
+      fetchCoachProfile(); 
     } catch (error) {
       console.error('Error submitting form:', error);
       if (axios.isAxiosError(error)) {

@@ -2,37 +2,37 @@ import React from 'react';
 import { SafeAreaView, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import bannerImage from '../../assets/images/sports-banner.jpg';
-
 const features = [
   {
     id: '1',
-    title: 'Facility Booking',
-    icon: 'fitness',
-    description: 'Reserve world-class venues',
-    screen: 'Facilities',
+    title: 'Manage Profile',
+    icon: 'person',
+    description: 'Update your coaching profile and details',
+    screen: 'ProfileManagement',
   },
   {
     id: '2',
-    title: 'Expert Coaching',
-    icon: 'trophy',
-    description: 'Coaching for all levels',
-    screen: 'Coaches',
+    title: 'Manage Requests',
+    icon: 'mail',
+    description: 'Handle incoming requests from athletes',
+    screen: 'Requests',
   },
   {
     id: '3',
-    title: 'Premium Equipment',
-    icon: 'barbell',
-    description: 'Access state-of-the-art gear',
-    screen: 'Equipment',
+    title: 'Manage Bookings',
+    icon: 'calendar',
+    description: 'View and manage your coaching schedule',
+    screen: 'Bookings',
   },
   {
     id: '4',
-    title: 'Sport Items Rental',
-    icon: 'basketball',
-    description: 'Lease premium athletic gear',
-    screen: 'Rental',
+    title: 'Book Facility & Equipment',
+    icon: 'business',
+    description: 'Reserve facilities and equipment for your sessions',
+    screen: 'FacilityEquipmentBooking',
   },
 ];
+
 
 export default function HomeScreen() {
   return (
