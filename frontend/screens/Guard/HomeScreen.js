@@ -38,7 +38,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={bannerImage} style={styles.banner}>
-        <Text style={styles.header}>Welcome to Dream Sport - Coach</Text>
+        <Text style={styles.header}>Welcome to Dream Sport - Guard</Text>
       </ImageBackground>
 
       <FlatList

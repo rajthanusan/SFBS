@@ -4,10 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StatusBar } from 'react-native';
 
-
-
-import HomeScreen from './GuardPage';
+import HomeScreen from './HomeScreen';
+import ScanScreen from './GuardPage';
 
 
 const Stack = createStackNavigator();
@@ -27,6 +27,8 @@ function MainTabs({ navigation, setUser, user }) {
     try {
       await AsyncStorage.removeItem('userToken');
       setUser(null);
+      
+      
     } catch (error) {
       console.error('Error logging out:', error);
       Alert.alert('Logout Error', 'An error occurred while logging out. Please try again.');
@@ -44,6 +46,10 @@ function MainTabs({ navigation, setUser, user }) {
               case 'Home':
                 iconName = focused ? 'home' : 'home-outline';
                 break;
+              case 'Scan':
+                iconName = focused ? 'qr-code' : 'qr-code-outline';
+                break;
+            
               case 'Logout':
                 iconName = 'log-out-outline';
                 break;
@@ -55,7 +61,7 @@ function MainTabs({ navigation, setUser, user }) {
           },
           tabBarActiveTintColor: '#008080',
           tabBarInactiveTintColor: 'gray',
-          headerShown: true,
+          headerShown: false,
           tabBarStyle: {
             paddingBottom: 5,
             paddingTop: 5,
@@ -68,27 +74,20 @@ function MainTabs({ navigation, setUser, user }) {
             fontSize: 12,
             fontWeight: '500',
           },
-          headerStyle: {
-            backgroundColor: '#008080',
-            height: 70,
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         })}
       >
-       
-       
-
-       
-         <Tab.Screen
-  name="Home"
-  options={{ title: 'Home' }}
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Home' }}
+        />
+        
+       <Tab.Screen
+  name="Scan"
+  options={{ title: 'Scan' }}
 >
-  {(props) => <HomeScreen {...props} user={user} />}
+  {(props) => <ScanScreen {...props} user={user} />}
 </Tab.Screen>
-      
 
         <Tab.Screen
           name="Logout"
@@ -104,7 +103,7 @@ function MainTabs({ navigation, setUser, user }) {
   );
 }
 
-export default function CoachNavigation({ navigation, setUser, user }) {
+export default function UserNavigation({ navigation, setUser, user }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -136,4 +135,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-
