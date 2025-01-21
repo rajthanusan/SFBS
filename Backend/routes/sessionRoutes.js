@@ -29,7 +29,7 @@ router.get('/request/:sessionId', auth, getSessionRequestById);
 router.post('/booking', auth, bookSession);
 router.get('/booking/:userId', auth, getUserBookings);
 router.get('/booking/coach/:coachId', auth, coach, getCoachBookings);
-router.get('/bookings', auth, admin, getAllBookings);
+router.get('/bookings', auth, getAllBookings);
 router.post('/upload-receipt/:id', auth, uploadReceipt);
 router.get('/download-qrcode/:id', auth, getQrCodeById);
 

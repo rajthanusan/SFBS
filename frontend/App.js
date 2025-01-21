@@ -22,6 +22,7 @@ import CoachesScreenBooking from './screens/Users/CoachesScreenBooking';
 import CoachProfileScreen from './screens/Users/CoachProfileScreen';
 import MyBookingsScreen from './screens/Users/MyBookingsScreen';
 import MyBookingBook from './screens/Users/MyBookingBook';
+import ChatScreen from "./components/ChatScreen"
 
 
 
@@ -129,6 +130,7 @@ export default function App() {
               <Stack.Screen name="MyBookingBook">
                 {(props) => <MyBookingBook {...props} user={user} />}
               </Stack.Screen>
+              <Stack.Screen name="Chat">{(props) => <ChatScreen {...props} user={user} />}</Stack.Screen>
              
             </>
           )}
